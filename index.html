@@ -5,70 +5,100 @@
   <title>Calificaciones C80</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      background: #0d0d0d;
-      color: #eee;
-      font-family: 'Segoe UI', sans-serif;
-      padding: 20px;
-      margin: 0;
-    }
-    h2, h3, h4 {
-      color: #00d0ff;
-    }
-    input, button, select {
-      padding: 10px;
-      margin: 5px 0;
-      border: none;
-      border-radius: 6px;
-      font-size: 1em;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    input, select {
-      background: #222;
-      color: #eee;
-    }
-    button {
-      background: #00aaff;
-      color: #fff;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    button:hover {
-      background: #008ecc;
-    }
-    .hidden {
-      display: none;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      background: #1a1a1a;
-    }
-    th, td {
-      border: 1px solid #333;
-      padding: 8px;
-      text-align: center;
-    }
-    th {
-      background: #222;
-    }
-    tr:hover {
-      background: #2a2a2a;
-    }
-    #login-container, #panel-bombero, #panel-admin {
-      max-width: 600px;
-      margin: auto;
-    }
-    hr {
-      border: 1px solid #444;
-      margin: 20px 0;
-    }
+    body { background: #0d0d0d; color: #eee; font-family: 'Segoe UI', sans-serif; padding: 20px; margin: 0;}
+    h2, h3, h4 { color: #00d0ff; }
+    input, button, select { padding:10px; margin:5px 0; border:none; border-radius:6px; font-size:1em; width:100%; box-sizing:border-box; }
+    input, select { background:#222; color:#eee; }
+    button { background:#00aaff; color:#fff; cursor:pointer; transition:background .3s ease; }
+    button:hover { background:#008ecc; }
+    .hidden { display:none; }
+    table { width:100%; border-collapse:collapse; margin-top:10px; background:#1a1a1a; }
+    th, td { border:1px solid #333; padding:8px; text-align:center; }
+    th { background:#222; }
+    tr:hover { background:#2a2a2a; }
+    #login-container, #panel-bombero, #panel-admin { max-width:600px; margin:auto; }
+    hr { border:1px solid #444; margin:20px 0; }
   </style>
 </head>
 <body>
 
-<!-- el resto del contenido HTML y JS queda igual -->
+<div id="login-container">
+  <h2>Ingreso</h2>
+  <input type="text" id="login-usuario" placeholder="Usuario"><br>
+  <input type="password" id="login-clave" placeholder="Clave"><br>
+  <button onclick="login()">Entrar</button>
+</div>
+
+<div id="panel-bombero" class="hidden">
+  <h2>Bienvenido <span id="nombre-usuario"></span></h2>
+  <div id="tabla-calificaciones"></div>
+  <div id="tabla-meses"></div>
+  <br><button onclick="logout()">Salir</button>
+</div>
+
+<div id="panel-admin" class="hidden">
+  <h2>Panel de administración</h2>
+  <p>Este archivo está precargado. Para editar datos, usar la versión editable en PC.</p>
+  <button onclick="logout()">Salir</button>
+
+  <hr>
+  <h3>Cargar calificaciones desde CSV</h3>
+  <input type="file" id="csvFileInput" accept=".csv"><br>
+  <button onclick="leerCSV()">Previsualizar CSV</button>
+  <button onclick="descargarCSVejemplo()">Descargar ejemplo</button>
+
+  <div id="vista-previa-csv"></div>
+  <button id="confirmarCSV" class="hidden" onclick="confirmarCargaCSV()">Confirmar carga</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+<script>
+let datos = { /* tu objeto datos aquí, con usuarios y admin */ };
+
+let usuarioActual = null;
+
+function login() {
+  // ... código de login ...
+}
+
+function logout() {
+  // ... código de logout ...
+}
+
+function mostrarCalificaciones(usuarioId) {
+  // ... código mostrar ...
+}
+
+function renderCalificaciones(usuarioId, mesSeleccionado) {
+  // ... código render ...
+}
+
+let csvCalificaciones = [];
+
+function leerCSV() {
+  // ... código leerCSV ...
+}
+
+function confirmarCargaCSV() {
+  // ... código confirmarCargaCSV ...
+}
+
+function descargarCSVejemplo() {
+  const encabezado = [
+    "dni","nombre","mes",
+    "Ded. Interna","Roperia","Asist. Diaria","O. Interno","Instruccion",
+    "A. Obligatoria","A Accidental","Guardia","P. Neg","P. Esp","TOTAL"
+  ];
+  const ejemplo = encabezado.join(",") + "\n"
+    + "20333444,Carlos Gomez,junio,10,10,10,30,15,5,40,5,0,0,95\n";
+  const blob = new Blob([ejemplo], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", "calificaciones_ejemplo.csv");
+  link.click();
+}
+</script>
+
 </body>
 </html>
