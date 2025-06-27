@@ -21,13 +21,27 @@
   </style>
 </head>
 <body>
+
 <div id="login-container">
   <h2>Ingreso</h2>
   <input type="text" id="login-usuario" placeholder="Usuario"><br>
   <input type="password" id="login-clave" placeholder="Clave"><br>
   <button onclick="login()">Entrar</button>
 </div>
-<!-- Paneles de usuario y admin omitidos aquí por brevedad -->
+
+<div id="panel-bombero" class="hidden">
+  <h2>Bienvenido <span id="nombre-usuario"></span></h2>
+  <div id="tabla-calificaciones"></div>
+  <div id="tabla-meses"></div>
+  <br><button onclick="logout()">Salir</button>
+</div>
+
+<div id="panel-admin" class="hidden">
+  <h2>Panel de administración</h2>
+  <p>Este archivo está precargado. Para editar datos, usar la versión editable en PC.</p>
+  <button onclick="logout()">Salir</button>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 <script>
 let datos = {
@@ -46,6 +60,35 @@ let datos = {
     }
   }
 };
+
+let usuarioActual = null;
+
+function login() {
+  const usuario = document.getElementById("login-usuario").value.trim();
+  const clave = document.getElementById("login-clave").value;
+
+  if (datos.usuarios[usuario] && datos.usuarios[usuario].password === clave) {
+    usuarioActual = usuario;
+    document.getElementById("login-container").classList.add("hidden");
+
+    if (datos.usuarios[usuario].esAdmin) {
+      document.getElementById("panel-admin").classList.remove("hidden");
+    } else {
+      document.getElementById("panel-bombero").classList.remove("hidden");
+      document.getElementById("nombre-usuario").textContent = datos.usuarios[usuario].nombre;
+    }
+  } else {
+    alert("Usuario o clave incorrecta");
+  }
+}
+
+function logout() {
+  usuarioActual = null;
+  document.getElementById("panel-admin").classList.add("hidden");
+  document.getElementById("panel-bombero").classList.add("hidden");
+  document.getElementById("login-container").classList.remove("hidden");
+}
 </script>
+
 </body>
 </html>
