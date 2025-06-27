@@ -130,7 +130,13 @@ function logout() {
 function mostrarCalificaciones(usuarioId) {
   const user = datos.usuarios[usuarioId];
   const calif = user.calificaciones || {};
-  const meses = Object.keys(calif).sort();
+const ordenMeses = [
+  "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
+  "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
+];
+const meses = Object.keys(calif).sort((a, b) =>
+  ordenMeses.indexOf(a) - ordenMeses.indexOf(b)
+); 
   if (meses.length === 0) {
     document.getElementById("tabla-calificaciones").innerHTML = "<p>No hay calificaciones aún.</p>";
     return;
@@ -156,7 +162,14 @@ function mostrarCalificaciones(usuarioId) {
 function renderCalificaciones(usuarioId, mesSeleccionado) {
   const user = datos.usuarios[usuarioId];
   const calif = user.calificaciones || {};
-  const meses = Object.keys(calif).sort();
+  const ordenMeses = [
+  "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
+  "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
+];
+const meses = Object.keys(calif).sort((a, b) =>
+  ordenMeses.indexOf(a) - ordenMeses.indexOf(b)
+);
+
   const categorias = Object.keys(calif[meses[0]] || {});
   if (!categorias.length) return;
 
