@@ -5,12 +5,12 @@
   <title>Calificaciones C80</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { background: #0d0d0d; color: #eee; font-family: 'Segoe UI', sans-serif; padding: 20px; margin: 0;}
-    h2, h3, h4 { color: #00d0ff; }
+    body { background: #0d0d0d; color: #ff4c4c; font-family: 'Segoe UI', sans-serif; padding: 20px; margin: 0; }
+    h2, h3, h4 { color: #ff4c4c; }
     input, button, select { padding:10px; margin:5px 0; border:none; border-radius:6px; font-size:1em; width:100%; box-sizing:border-box; }
     input, select { background:#222; color:#eee; }
-    button { background:#00aaff; color:#fff; cursor:pointer; transition:background .3s ease; }
-    button:hover { background:#008ecc; }
+    button { background:#ff4c4c; color:#fff; cursor:pointer; transition:background .3s ease; }
+    button:hover { background:#cc0000; }
     .hidden { display:none; }
     table { width:100%; border-collapse:collapse; margin-top:10px; background:#1a1a1a; }
     th, td { border:1px solid #333; padding:8px; text-align:center; }
@@ -24,7 +24,7 @@
 
 <div id="login-container">
   <h2>Ingreso</h2>
-  <input type="text" id="login-usuario" placeholder="Usuario"><br>
+  <input type="text" id="login-usuario" placeholder="Legajo"><br>
   <input type="password" id="login-clave" placeholder="Clave"><br>
   <button onclick="login()">Entrar</button>
 </div>
@@ -40,9 +40,19 @@
   <h2>Panel de administración</h2>
   <p>Este archivo está precargado. Para editar datos, usar la versión editable en PC.</p>
   <button onclick="logout()">Salir</button>
+
+  <hr>
+  <h3>Crear nuevo usuario</h3>
+  <input type="text" id="nuevo-legajo" placeholder="Legajo">
+  <input type="text" id="nuevo-nombre" placeholder="Nombre">
+  <input type="password" id="nueva-clave" placeholder="Contraseña">
+  <select id="nuevo-rol">
+    <option value="false">Bombero</option>
+    <option value="true">Administrador</option>
+  </select>
+  <button onclick="crearUsuario()">Crear usuario</button>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 <script>
 let datos = {
   "usuarios": {
@@ -87,6 +97,36 @@ function logout() {
   document.getElementById("panel-admin").classList.add("hidden");
   document.getElementById("panel-bombero").classList.add("hidden");
   document.getElementById("login-container").classList.remove("hidden");
+}
+
+function crearUsuario() {
+  const legajo = document.getElementById("nuevo-legajo").value.trim();
+  const nombre = document.getElementById("nuevo-nombre").value.trim();
+  const clave = document.getElementById("nueva-clave").value.trim();
+  const esAdmin = document.getElementById("nuevo-rol").value === "true";
+
+  if (!legajo || !nombre || !clave) {
+    alert("Todos los campos son obligatorios.");
+    return;
+  }
+
+  if (datos.usuarios[legajo]) {
+    alert("Ya existe un usuario con ese legajo.");
+    return;
+  }
+
+  datos.usuarios[legajo] = {
+    password: clave,
+    nombre: nombre,
+    esAdmin: esAdmin,
+    calificaciones: {}
+  };
+
+  alert("Usuario creado correctamente.");
+  document.getElementById("nuevo-legajo").value = "";
+  document.getElementById("nuevo-nombre").value = "";
+  document.getElementById("nueva-clave").value = "";
+  document.getElementById("nuevo-rol").value = "false";
 }
 </script>
 
