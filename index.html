@@ -183,14 +183,16 @@ const meses = Object.keys(calif).sort((a, b) =>
 
   mesesAMostrar.forEach(mes => {
     html += `<tr><td>${mes}</td>`;
-    categorias.forEach(cat => {
-      const val = calif[mes]?.[cat] ?? 0;
-      html += `<td>${val}</td>`;
-      totales[cat] += val;
-    });
-    html += "</tr>";
-  });
+    const columnasNoAcumulables = ["Porcentaje asistencias HT"];
 
+categorias.forEach(cat => {
+  const val = calif[mes]?.[cat] ?? 0;
+  html += `<td>${val}</td>`;
+  if (!columnasNoAcumulables.includes(cat)) {
+    totales[cat] += val;
+  }
+});
+    
   if (mesSeleccionado === "ANUAL" && meses.length > 1) {
     html += "<tr><th>Total Anual</th>";
     categorias.forEach(cat => html += `<th>${totales[cat]}</th>`);
