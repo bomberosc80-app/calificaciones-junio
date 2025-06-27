@@ -40,8 +40,14 @@
   <h2>Panel de administración</h2>
   <p>Este archivo está precargado. Para editar datos, usar la versión editable en PC.</p>
   <button onclick="logout()">Salir</button>
-
+<hr>
+<h3>Cargar calificaciones desde CSV</h3>
+<input type="file" id="csvFileInput" accept=".csv"><br>
+<button onclick="leerCSV()">Previsualizar CSV</button>
+<div id="vista-previa-csv"></div>
+<button id="confirmarCSV" class="hidden" onclick="confirmarCargaCSV()">Confirmar carga</button>
   <hr>
+  
   <h3>Crear nuevo usuario</h3>
   <input type="text" id="nuevo-legajo" placeholder="Legajo">
   <input type="text" id="nuevo-nombre" placeholder="Nombre">
