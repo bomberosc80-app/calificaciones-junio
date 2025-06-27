@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -38,207 +39,14 @@
 
 <div id="panel-admin" class="hidden">
   <h2>Panel de administración</h2>
-  <p>Este archivo está precargado. Para editar datos, usar la versión editable en PC.</p>
+  <p>El archivo <b>calificaciones.csv</b> debe estar en el mismo directorio que este archivo.</p>
   <button onclick="logout()">Salir</button>
-
-  <hr>
-  <h3>Crear nuevo usuario</h3>
-  <input type="text" id="nuevo-legajo" placeholder="Legajo">
-  <input type="text" id="nuevo-nombre" placeholder="Nombre">
-  <input type="password" id="nueva-clave" placeholder="Contraseña">
-  <select id="nuevo-rol">
-    <option value="false">Bombero</option>
-    <option value="true">Administrador</option>
-  </select>
-  <button onclick="crearUsuario()">Crear usuario</button>
-
-  <hr>
-  <h3>Cargar calificaciones desde CSV</h3>
-  <input type="file" id="csvFileInput" accept=".csv"><br>
-  <button onclick="leerCSV()">Previsualizar CSV</button>
-  <div id="vista-previa-csv"></div>
-  <button id="confirmarCSV" class="hidden" onclick="confirmarCargaCSV()">Confirmar carga</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 <script>
 let datos = {
   "usuarios": {
-    "c80306": {
-      "password": "c80306",
-      "nombre": "Sergio",
-      "esAdmin": false,
-      "calificaciones": {
-        "ENERO": {
-          "Ded. Interna": 10.0,
-          "Roperia": 10.0,
-          "Asist. Diaria": 10.0,
-          "O. Interno": 30.0,
-          "Instruccion": 15.0,
-          "A. Obligatoria": 5.0,
-          "A Accidental": 40.0,
-          "Guardia": 5.0,
-          "P. Neg": 0.0,
-          "P. Esp": 0.0,
-          "TOTAL": 95.0,
-          " Porcentaje asistencias HT": "35%"
-        },
-        "FEBREROO": {
-          "Ded. Interna": 10.0,
-          "Roperia": 10.0,
-          "Asist. Diaria": 10.0,
-          "O. Interno": 30.0,
-          "Instruccion": 15.0,
-          "A. Obligatoria": 5.0,
-          "A Accidental": 40.0,
-          "Guardia": 5.0,
-          "P. Neg": 0.0,
-          "P. Esp": 0.0,
-          "TOTAL": 95.0,
-          " Porcentaje asistencias HT": "35%"
-        },
-        "MARZO": {
-          "Ded. Interna": 10.0,
-          "Roperia": 10.0,
-          "Asist. Diaria": 10.0,
-          "O. Interno": 30.0,
-          "Instruccion": 15.0,
-          "A. Obligatoria": 5.0,
-          "A Accidental": 40.0,
-          "Guardia": 5.0,
-          "P. Neg": 0.0,
-          "P. Esp": 0.0,
-          "TOTAL": 95.0,
-          " Porcentaje asistencias HT": "35%"
-        },
-        "ABRIL": {
-          "Ded. Interna": 10.0,
-          "Roperia": 10.0,
-          "Asist. Diaria": 10.0,
-          "O. Interno": 30.0,
-          "Instruccion": 15.0,
-          "A. Obligatoria": 5.0,
-          "A Accidental": 40.0,
-          "Guardia": 5.0,
-          "P. Neg": 0.0,
-          "P. Esp": 0.0,
-          "TOTAL": 95.0,
-          " Porcentaje asistencias HT": "35%"
-        },
-        "MAYO": {
-          "Ded. Interna": 10.0,
-          "Roperia": 10.0,
-          "Asist. Diaria": 10.0,
-          "O. Interno": 30.0,
-          "Instruccion": 15.0,
-          "A. Obligatoria": 5.0,
-          "A Accidental": 40.0,
-          "Guardia": 5.0,
-          "P. Neg": 0.0,
-          "P. Esp": 0.0,
-          "TOTAL": 95.0,
-          " Porcentaje asistencias HT": "35%"
-        },
-        "JUNIO": {
-          "Ded. Interna": 10.0,
-          "Roperia": 10.0,
-          "Asist. Diaria": 10.0,
-          "O. Interno": 30.0,
-          "Instruccion": 15.0,
-          "A. Obligatoria": 5.0,
-          "A Accidental": 40.0,
-          "Guardia": 5.0,
-          "P. Neg": 0.0,
-          "P. Esp": 0.0,
-          "TOTAL": 95.0,
-          " Porcentaje asistencias HT": "35%"
-        },
-        "JULIO": {
-          "Ded. Interna": 10.0,
-          "Roperia": 10.0,
-          "Asist. Diaria": 10.0,
-          "O. Interno": 30.0,
-          "Instruccion": 15.0,
-          "A. Obligatoria": 5.0,
-          "A Accidental": 40.0,
-          "Guardia": 5.0,
-          "P. Neg": 0.0,
-          "P. Esp": 0.0,
-          "TOTAL": 95.0,
-          " Porcentaje asistencias HT": "35%"
-        },
-        "AGOSTO": {
-          "Ded. Interna": 10.0,
-          "Roperia": 10.0,
-          "Asist. Diaria": 10.0,
-          "O. Interno": 30.0,
-          "Instruccion": 15.0,
-          "A. Obligatoria": 5.0,
-          "A Accidental": 40.0,
-          "Guardia": 5.0,
-          "P. Neg": 0.0,
-          "P. Esp": 0.0,
-          "TOTAL": 95.0,
-          " Porcentaje asistencias HT": "35%"
-        },
-        "SEPTIEMBRE": {
-          "Ded. Interna": 10.0,
-          "Roperia": 10.0,
-          "Asist. Diaria": 10.0,
-          "O. Interno": 30.0,
-          "Instruccion": 15.0,
-          "A. Obligatoria": 5.0,
-          "A Accidental": 40.0,
-          "Guardia": 5.0,
-          "P. Neg": 0.0,
-          "P. Esp": 0.0,
-          "TOTAL": 95.0,
-          " Porcentaje asistencias HT": "35%"
-        },
-        "OCTUBRE": {
-          "Ded. Interna": 10.0,
-          "Roperia": 10.0,
-          "Asist. Diaria": 10.0,
-          "O. Interno": 30.0,
-          "Instruccion": 15.0,
-          "A. Obligatoria": 5.0,
-          "A Accidental": 40.0,
-          "Guardia": 5.0,
-          "P. Neg": 0.0,
-          "P. Esp": 0.0,
-          "TOTAL": 95.0,
-          " Porcentaje asistencias HT": "35%"
-        },
-        "NOVIEMBRE": {
-          "Ded. Interna": 10.0,
-          "Roperia": 10.0,
-          "Asist. Diaria": 10.0,
-          "O. Interno": 30.0,
-          "Instruccion": 15.0,
-          "A. Obligatoria": 5.0,
-          "A Accidental": 40.0,
-          "Guardia": 5.0,
-          "P. Neg": 0.0,
-          "P. Esp": 0.0,
-          "TOTAL": 95.0,
-          " Porcentaje asistencias HT": "35%"
-        },
-        "DICIEMBRE": {
-          "Ded. Interna": 10.0,
-          "Roperia": 10.0,
-          "Asist. Diaria": 10.0,
-          "O. Interno": 30.0,
-          "Instruccion": 15.0,
-          "A. Obligatoria": 5.0,
-          "A Accidental": 40.0,
-          "Guardia": 5.0,
-          "P. Neg": 0.0,
-          "P. Esp": 0.0,
-          "TOTAL": 95.0,
-          " Porcentaje asistencias HT": "35%"
-        }
-      }
-    },
     "admin": {
       "password": "admin123",
       "nombre": "Administrador",
@@ -249,6 +57,43 @@ let datos = {
 };
 
 let usuarioActual = null;
+
+// Cargar automáticamente calificaciones.csv desde el mismo host
+Papa.parse("calificaciones.csv", {
+  download: true,
+  header: true,
+  skipEmptyLines: true,
+  complete: function(results) {
+    const csv = results.data;
+    csv.forEach(row => {
+      const legajo = row.legajo?.trim();
+      const mes = row.mes?.trim().toUpperCase();
+      const nombre = row.nombre?.trim();
+
+      if (!legajo || !mes) return;
+
+      if (!datos.usuarios[legajo]) {
+        datos.usuarios[legajo] = {
+          password: legajo,
+          nombre: nombre || legajo,
+          esAdmin: false,
+          calificaciones: {}
+        };
+      }
+
+      if (!datos.usuarios[legajo].calificaciones[mes]) {
+        datos.usuarios[legajo].calificaciones[mes] = {};
+      }
+
+      for (const key in row) {
+        if (!["legajo", "nombre", "mes"].includes(key)) {
+          const valor = parseFloat(row[key]);
+          datos.usuarios[legajo].calificaciones[mes][key] = isNaN(valor) ? 0 : valor;
+        }
+      }
+    });
+  }
+});
 
 function login() {
   const usuario = document.getElementById("login-usuario").value.trim();
@@ -263,6 +108,7 @@ function login() {
     } else {
       document.getElementById("panel-bombero").classList.remove("hidden");
       document.getElementById("nombre-usuario").textContent = datos.usuarios[usuario].nombre;
+      mostrarCalificaciones(usuario);
     }
   } else {
     alert("Usuario o clave incorrecta");
@@ -276,105 +122,65 @@ function logout() {
   document.getElementById("login-container").classList.remove("hidden");
 }
 
-function crearUsuario() {
-  const legajo = document.getElementById("nuevo-legajo").value.trim();
-  const nombre = document.getElementById("nuevo-nombre").value.trim();
-  const clave = document.getElementById("nueva-clave").value.trim();
-  const esAdmin = document.getElementById("nuevo-rol").value === "true";
+function mostrarCalificaciones(usuarioId) {
+  const user = datos.usuarios[usuarioId];
+  const calif = user.calificaciones || {};
+  const meses = Object.keys(calif).sort();
 
-  if (!legajo || !nombre || !clave) {
-    alert("Todos los campos son obligatorios.");
+  if (meses.length === 0) {
+    document.getElementById("tabla-calificaciones").innerHTML = "<p>No hay calificaciones aún.</p>";
     return;
   }
 
-  if (datos.usuarios[legajo]) {
-    alert("Ya existe un usuario con ese legajo.");
-    return;
+  let html = `<label for="select-mes">Ver calificaciones de: </label>
+    <select id="select-mes">
+      <option value="ANUAL">Resumen Anual</option>`;
+  meses.forEach(mes => {
+    html += `<option value="${mes}">${mes}</option>`;
+  });
+  html += `</select><br><br>`;
+  document.getElementById("tabla-calificaciones").innerHTML = html;
+
+  const selector = document.getElementById("select-mes");
+  selector.addEventListener("change", () => {
+    renderCalificaciones(usuarioId, selector.value);
+  });
+
+  renderCalificaciones(usuarioId, "ANUAL");
+}
+
+function renderCalificaciones(usuarioId, mesSeleccionado) {
+  const user = datos.usuarios[usuarioId];
+  const calif = user.calificaciones || {};
+  const meses = Object.keys(calif).sort();
+  if (meses.length === 0) return;
+
+  const categorias = Object.keys(calif[meses[0]]);
+  let html = "<table><thead><tr><th>Mes</th>";
+  categorias.forEach(cat => html += `<th>${cat}</th>`);
+  html += "</tr></thead><tbody>";
+
+  const totales = Object.fromEntries(categorias.map(c => [c, 0]));
+  const mesesAMostrar = mesSeleccionado === "ANUAL" ? meses : [mesSeleccionado];
+
+  mesesAMostrar.forEach(mes => {
+    html += `<tr><td>${mes}</td>`;
+    categorias.forEach(cat => {
+      const val = calif[mes]?.[cat] ?? 0;
+      html += `<td>${val}</td>`;
+      totales[cat] += val;
+    });
+    html += "</tr>";
+  });
+
+  if (mesSeleccionado === "ANUAL" && meses.length > 1) {
+    html += "<tr><th>Total Anual</th>";
+    categorias.forEach(cat => html += `<th>${totales[cat]}</th>`);
+    html += "</tr>";
   }
 
-  datos.usuarios[legajo] = {
-    password: clave,
-    nombre: nombre,
-    esAdmin: esAdmin,
-    calificaciones: {}
-  };
-
-  alert("Usuario creado correctamente.");
-  document.getElementById("nuevo-legajo").value = "";
-  document.getElementById("nuevo-nombre").value = "";
-  document.getElementById("nueva-clave").value = "";
-  document.getElementById("nuevo-rol").value = "false";
-}
-
-let csvCalificaciones = [];
-
-function leerCSV() {
-  const input = document.getElementById("csvFileInput");
-  if (!input.files.length) return alert("Seleccioná un archivo CSV");
-
-  Papa.parse(input.files[0], {
-    header: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-      csvCalificaciones = results.data;
-
-      if (!csvCalificaciones.length) {
-        alert("El archivo está vacío o mal formado.");
-        return;
-      }
-
-      let html = "<h4>Vista previa:</h4><table><thead><tr>";
-      Object.keys(csvCalificaciones[0]).forEach(col => {
-        html += `<th>${col}</th>`;
-      });
-      html += "</tr></thead><tbody>";
-      csvCalificaciones.forEach(row => {
-        html += "<tr>";
-        Object.values(row).forEach(val => {
-          html += `<td>${val}</td>`;
-        });
-        html += "</tr>";
-      });
-      html += "</tbody></table>";
-      document.getElementById("vista-previa-csv").innerHTML = html;
-      document.getElementById("confirmarCSV").classList.remove("hidden");
-    }
-  });
-}
-
-function confirmarCargaCSV() {
-  csvCalificaciones.forEach(row => {
-    const legajo = row.legajo?.trim();
-    const mes = row.mes?.trim().toUpperCase();
-    const nombre = row.nombre?.trim();
-
-    if (!legajo || !mes) return;
-
-    if (!datos.usuarios[legajo]) {
-      datos.usuarios[legajo] = {
-        password: legajo,
-        nombre: nombre || legajo,
-        esAdmin: false,
-        calificaciones: {}
-      };
-    }
-
-    if (!datos.usuarios[legajo].calificaciones[mes]) {
-      datos.usuarios[legajo].calificaciones[mes] = {};
-    }
-
-    for (const key in row) {
-      if (!["legajo", "nombre", "mes"].includes(key)) {
-        const valor = parseFloat(row[key]);
-        datos.usuarios[legajo].calificaciones[mes][key] = isNaN(valor) ? 0 : valor;
-      }
-    }
-  });
-
-  alert("Todas las calificaciones fueron cargadas correctamente.");
-  document.getElementById("vista-previa-csv").innerHTML = "";
-  document.getElementById("confirmarCSV").classList.add("hidden");
-  csvCalificaciones = [];
+  html += "</tbody></table>";
+  document.getElementById("tabla-meses").innerHTML = html;
 }
 </script>
 
