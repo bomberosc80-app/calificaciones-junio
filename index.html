@@ -40,14 +40,8 @@
   <h2>Panel de administración</h2>
   <p>Este archivo está precargado. Para editar datos, usar la versión editable en PC.</p>
   <button onclick="logout()">Salir</button>
-<hr>
-<h3>Cargar calificaciones desde CSV</h3>
-<input type="file" id="csvFileInput" accept=".csv"><br>
-<button onclick="leerCSV()">Previsualizar CSV</button>
-<div id="vista-previa-csv"></div>
-<button id="confirmarCSV" class="hidden" onclick="confirmarCargaCSV()">Confirmar carga</button>
+
   <hr>
-  
   <h3>Crear nuevo usuario</h3>
   <input type="text" id="nuevo-legajo" placeholder="Legajo">
   <input type="text" id="nuevo-nombre" placeholder="Nombre">
@@ -57,8 +51,16 @@
     <option value="true">Administrador</option>
   </select>
   <button onclick="crearUsuario()">Crear usuario</button>
+
+  <hr>
+  <h3>Cargar calificaciones desde CSV</h3>
+  <input type="file" id="csvFileInput" accept=".csv"><br>
+  <button onclick="leerCSV()">Previsualizar CSV</button>
+  <div id="vista-previa-csv"></div>
+  <button id="confirmarCSV" class="hidden" onclick="confirmarCargaCSV()">Confirmar carga</button>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 <script>
 let datos = {
   "usuarios": {
@@ -133,6 +135,77 @@ function crearUsuario() {
   document.getElementById("nuevo-nombre").value = "";
   document.getElementById("nueva-clave").value = "";
   document.getElementById("nuevo-rol").value = "false";
+}
+
+let csvCalificaciones = [];
+
+function leerCSV() {
+  const input = document.getElementById("csvFileInput");
+  if (!input.files.length) return alert("Seleccioná un archivo CSV");
+
+  Papa.parse(input.files[0], {
+    header: true,
+    skipEmptyLines: true,
+    complete: function(results) {
+      csvCalificaciones = results.data;
+
+      if (!csvCalificaciones.length) {
+        alert("El archivo está vacío o mal formado.");
+        return;
+      }
+
+      let html = "<h4>Vista previa:</h4><table><thead><tr>";
+      Object.keys(csvCalificaciones[0]).forEach(col => {
+        html += `<th>${col}</th>`;
+      });
+      html += "</tr></thead><tbody>";
+      csvCalificaciones.forEach(row => {
+        html += "<tr>";
+        Object.values(row).forEach(val => {
+          html += `<td>${val}</td>`;
+        });
+        html += "</tr>";
+      });
+      html += "</tbody></table>";
+      document.getElementById("vista-previa-csv").innerHTML = html;
+      document.getElementById("confirmarCSV").classList.remove("hidden");
+    }
+  });
+}
+
+function confirmarCargaCSV() {
+  csvCalificaciones.forEach(row => {
+    const legajo = row.legajo?.trim();
+    const mes = row.mes?.trim().toUpperCase();
+    const nombre = row.nombre?.trim();
+
+    if (!legajo || !mes) return;
+
+    if (!datos.usuarios[legajo]) {
+      datos.usuarios[legajo] = {
+        password: legajo,
+        nombre: nombre || legajo,
+        esAdmin: false,
+        calificaciones: {}
+      };
+    }
+
+    if (!datos.usuarios[legajo].calificaciones[mes]) {
+      datos.usuarios[legajo].calificaciones[mes] = {};
+    }
+
+    for (const key in row) {
+      if (!["legajo", "nombre", "mes"].includes(key)) {
+        const valor = parseFloat(row[key]);
+        datos.usuarios[legajo].calificaciones[mes][key] = isNaN(valor) ? 0 : valor;
+      }
+    }
+  });
+
+  alert("Todas las calificaciones fueron cargadas correctamente.");
+  document.getElementById("vista-previa-csv").innerHTML = "";
+  document.getElementById("confirmarCSV").classList.add("hidden");
+  csvCalificaciones = [];
 }
 </script>
 
