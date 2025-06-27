@@ -94,6 +94,7 @@ function login() {
     } else {
       document.getElementById("panel-bombero").classList.remove("hidden");
       document.getElementById("nombre-usuario").textContent = datos.usuarios[usuario].nombre;
+      mostrarCalificaciones(usuario);
     }
   } else {
     alert("Usuario o clave incorrecta");
