@@ -63,7 +63,6 @@ Papa.parse("usuarios.csv", {
         calificaciones: {}
       };
     });
-    console.log("Usuarios cargados:", datos.usuarios);
   }
 });
 
@@ -101,16 +100,14 @@ Papa.parse("calificaciones.csv", {
         }
       }
     });
-    console.log("Calificaciones cargadas:", datos);
   }
 });
 
 function login() {
   const usuario = document.getElementById("login-usuario").value.trim().toUpperCase();
   const clave = document.getElementById("login-clave").value.trim();
-  console.log("Intento login:", usuario, clave);
-
   const user = datos.usuarios[usuario];
+
   if (user && user.password === clave) {
     usuarioActual = usuario;
     document.getElementById("login-container").classList.add("hidden");
@@ -207,4 +204,9 @@ function renderCalificaciones(usuarioId, mesSeleccionado) {
 
   html += "</tbody></table>";
   document.getElementById("tabla-meses").innerHTML = html;
-  document.getElementById("asistencias-box").innerHTM
+  document.getElementById("asistencias-box").innerHTML = porcentajeBox.length ?
+    `<h4>Porcentaje Asistencias HT</h4><p>${porcentajeBox.join("<br>")}</p>` : "";
+}
+</script>
+</body>
+</html>
