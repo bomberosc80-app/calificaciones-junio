@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body { background: #0d0d0d; color: #ff4c4c; font-family: 'Segoe UI', sans-serif; padding: 20px; margin: 0; }
-    h2, h3, h4 { color: #ff4c4c; }
     input, button, select { padding:10px; margin:5px 0; border:none; border-radius:6px; font-size:1em; width:100%; box-sizing:border-box; }
     input, select { background:#222; color:#eee; }
     button { background:#ff4c4c; color:#fff; cursor:pointer; transition:background .3s ease; }
@@ -56,151 +55,38 @@ document.addEventListener('DOMContentLoaded', () => {
   btnLogin.disabled = true;
   btnLogin.textContent = 'Cargando...';
 
-  // Cargar CSVs
   Papa.parse('usuarios.csv', {
-    download: true, header: true, skipEmptyLines: true,
-    transformHeader: h => h.trim().toLowerCase(),
+    download: true,
+    header: true,
+    skipEmptyLines: true,
     complete: function(results) {
+      console.log('Usuarios cargados:', results.data);
       results.data.forEach(row => {
         const legajo = row.legajo?.trim();
         if (!legajo) return;
         datos.usuarios[legajo] = {
           password: row.clave?.trim() || legajo,
           nombre: row.nombre?.trim() || legajo,
-          esAdmin: (row.rol||'').trim().toLowerCase() === 'admin',
+          esAdmin: (row.rol || '').trim().toLowerCase() === 'admin',
           calificaciones: {}
         };
       });
       cargadoUsuarios = true;
-      chequearTodoCargado();
+      chequearCarga();
     }
   });
+
   Papa.parse('calificaciones.csv', {
-    download: true, header: true, skipEmptyLines: true,
-    transformHeader: h => h.trim().toLowerCase(),
+    download: true,
+    header: true,
+    skipEmptyLines: true,
     complete: function(results) {
+      console.log('Calificaciones cargadas:', results.data);
       results.data.forEach(row => {
         const legajo = row.legajo?.trim();
         const mes = row.mes?.trim().toUpperCase();
         if (!legajo || !mes) return;
-        if (!datos.usuarios[legajo]) datos.usuarios[legajo] = { password: legajo, nombre: legajo, esAdmin: false, calificaciones: {} };
-        if (!datos.usuarios[legajo].calificaciones[mes]) datos.usuarios[legajo].calificaciones[mes] = {};
-        Object.keys(row).forEach(key => {
-          if (key !== 'legajo' && key !== 'mes') {
-            datos.usuarios[legajo].calificaciones[mes][key] = isNaN(parseFloat(row[key])) ? 0 : parseFloat(row[key]);
-          }
-        });
-      });
-      cargadoCalifs = true;
-      chequearTodoCargado();
-    }
-  });
-});
 
-function chequearTodoCargado() {
-  const btnLogin = document.getElementById('btnLogin');
-  if (cargadoUsuarios && cargadoCalifs) {
-    btnLogin.disabled = false;
-    btnLogin.textContent = 'Entrar';
-  }
-}
-
-function login() {
-  const usuario = document.getElementById('login-usuario').value.trim();
-  const clave = document.getElementById('login-clave').value;
-  if (datos.usuarios[usuario] && datos.usuarios[usuario].password === clave) {
-    usuarioActual = usuario;
-    document.getElementById('login-container').classList.add('hidden');
-    if (datos.usuarios[usuario].esAdmin) {
-      document.getElementById('panel-admin').classList.remove('hidden');
-    } else {
-      document.getElementById('panel-bombero').classList.remove('hidden');
-      document.getElementById('nombre-usuario').textContent = datos.usuarios[usuario].nombre;
-      mostrarCalificaciones(usuario);
-    }
-  } else {
-    alert('Usuario o clave incorrecta');
-  }
-}
-
-function logout() {
-  usuarioActual = null;
-  document.getElementById('panel-admin').classList.add('hidden');
-  document.getElementById('panel-bombero').classList.add('hidden');
-  document.getElementById('login-container').classList.remove('hidden');
-}
-
-function mostrarCalificaciones(usuarioId) {
-  const datosUser = datos.usuarios[usuarioId].calificaciones;
-  const orden = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
-  const meses = Object.keys(datosUser).sort((a,b)=>orden.indexOf(a)-orden.indexOf(b));
-  const contSelect = document.getElementById('tabla-calificaciones');
-  contSelect.innerHTML = '';
-  if (!meses.length) {
-    contSelect.innerHTML = '<p>No hay calificaciones aún.</p>';
-    document.getElementById('tabla-meses').innerHTML = '';
-    return;
-  }
-  const select = document.createElement('select');
-  select.id = 'select-mes';
-  const optAll = document.createElement('option'); optAll.value='ANUAL'; optAll.textContent='Resumen Anual'; select.append(optAll);
-  meses.forEach(m=>{
-    const opt = document.createElement('option'); opt.value=m; opt.textContent=m; select.append(opt);
-  });
-  contSelect.append(select);
-  select.addEventListener('change',()=>renderCalificaciones(usuarioId, select.value));
-  renderCalificaciones(usuarioId, 'ANUAL');
-}
-
-function renderCalificaciones(usuarioId, mesSeleccionado) {
-  const datosUser = datos.usuarios[usuarioId].calificaciones;
-  const orden = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
-  const meses = Object.keys(datosUser).sort((a,b)=>orden.indexOf(a)-orden.indexOf(b));
-  const todasCats = Object.keys(datosUser[meses[0]] || {});
-  const tablaCats = todasCats.filter(c=>c.toLowerCase()!=='porcentaje asistencias ht');
-
-  const cont = document.getElementById('tabla-meses');
-  cont.innerHTML = '';
-
-  if (!tablaCats.length) {
-    cont.innerHTML = '<p>No hay datos para mostrar.</p>';
-    return;
-  }
-
-  // Construir tabla
-  const table = document.createElement('table');
-  const thead = document.createElement('thead');
-  const trHead = document.createElement('tr');
-  trHead.innerHTML = '<th>Mes</th>' + tablaCats.map(cat=>`<th>${cat}</th>`).join('');
-  thead.append(trHead);
-
-  const tbody = document.createElement('tbody');
-  const mesesAMostrar = mesSeleccionado==='ANUAL'?meses:[mesSeleccionado];
-  mesesAMostrar.forEach(mes=>{
-    const tr = document.createElement('tr');
-    let rowHtml = `<td>${mes}</td>`;
-    tablaCats.forEach(cat=>{
-      const val = datosUser[mes][cat] != null ? datosUser[mes][cat] : 0;
-      rowHtml += `<td>${val}</td>`;
-    });
-    tr.innerHTML = rowHtml;
-    tbody.append(tr);
-  });
-
-  table.append(thead, tbody);
-  cont.append(table);
-
-  // Mostrar porcentaje asistencias HT en caja separada
-  const caja = document.createElement('div');
-  caja.className = 'caja-porcentaje';
-  let textoHT = '';
-  if (mesSeleccionado !== 'ANUAL') {
-    const ht = datosUser[mesSeleccionado]['porcentaje asistencias ht'];
-    textoHT = ht != null ? ht : '0';
-  }
-  caja.textContent = `Porcentaje asistencias HT: ${textoHT}`;
-  cont.append(caja);
-}
-</script>
-</body>
-</html>
+        if (!datos.usuarios[legajo]) {
+          datos.usuarios[legajo] = {
+            password: legajo,
