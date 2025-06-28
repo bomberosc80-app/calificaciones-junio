@@ -6,18 +6,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body { background: #0d0d0d; color: #ff4c4c; font-family: 'Segoe UI', sans-serif; padding: 20px; margin: 0; }
+    h2, h3, h4 { color: #ff4c4c; }
     input, button, select { padding:10px; margin:5px 0; border:none; border-radius:6px; font-size:1em; width:100%; box-sizing:border-box; }
     input, select { background:#222; color:#eee; }
     button { background:#ff4c4c; color:#fff; cursor:pointer; transition:background .3s ease; }
     button:hover { background:#cc0000; }
     .hidden { display:none; }
-    .caja-porcentaje { margin-top:15px; padding:10px; background:#222; border-radius:6px; text-align:center; }
     table { width:100%; border-collapse:collapse; margin-top:10px; background:#1a1a1a; }
     th, td { border:1px solid #333; padding:8px; text-align:center; }
     th { background:#222; }
     tr:hover { background:#2a2a2a; }
     #login-container, #panel-bombero, #panel-admin { max-width:600px; margin:auto; }
-    hr { border:1px solid #444; margin:20px 0; }
+    .caja-porcentaje { margin-top:15px; padding:10px; background:#222; border-radius:6px; text-align:center; }
   </style>
 </head>
 <body>
@@ -48,45 +48,158 @@
 let datos = { usuarios: {} };
 let usuarioActual = null;
 let cargadoUsuarios = false;
-let cargadoCalifs   = false;
+let cargadoCalifs = false;
 
-document.addEventListener('DOMContentLoaded', () => {
-  const btnLogin = document.getElementById('btnLogin');
-  btnLogin.disabled = true;
-  btnLogin.textContent = 'Cargando...';
+function chequearCarga() {
+  if (cargadoUsuarios && cargadoCalifs) {
+    document.getElementById("btnLogin").disabled = false;
+    document.getElementById("btnLogin").textContent = "Entrar";
+  }
+}
 
-  Papa.parse('usuarios.csv', {
-    download: true,
-    header: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-      console.log('Usuarios cargados:', results.data);
-      results.data.forEach(row => {
-        const legajo = row.legajo?.trim();
-        if (!legajo) return;
+Papa.parse("usuarios.csv", {
+  download: true,
+  header: true,
+  skipEmptyLines: true,
+  complete: function(results) {
+    console.log("Usuarios cargados:", results.data);
+    results.data.forEach(row => {
+      const legajo = row.legajo?.trim();
+      if (!legajo) return;
+      datos.usuarios[legajo] = {
+        password: row.clave?.trim() || legajo,
+        nombre: row.nombre?.trim() || legajo,
+        esAdmin: row.rol?.trim().toLowerCase() === "admin",
+        calificaciones: {}
+      };
+    });
+    cargadoUsuarios = true;
+    chequearCarga();
+  }
+});
+
+Papa.parse("calificaciones.csv", {
+  download: true,
+  header: true,
+  skipEmptyLines: true,
+  complete: function(results) {
+    console.log("Calificaciones cargadas:", results.data);
+    results.data.forEach(row => {
+      const legajo = row.legajo?.trim();
+      const mes = row.mes?.trim().toUpperCase();
+      if (!legajo || !mes) return;
+      if (!datos.usuarios[legajo]) {
         datos.usuarios[legajo] = {
-          password: row.clave?.trim() || legajo,
-          nombre: row.nombre?.trim() || legajo,
-          esAdmin: (row.rol || '').trim().toLowerCase() === 'admin',
+          password: legajo,
+          nombre: legajo,
+          esAdmin: false,
           calificaciones: {}
         };
-      });
-      cargadoUsuarios = true;
-      chequearCarga();
+      }
+      if (!datos.usuarios[legajo].calificaciones[mes]) {
+        datos.usuarios[legajo].calificaciones[mes] = {};
+      }
+      for (const key in row) {
+        if (!["legajo", "nombre", "mes"].includes(key)) {
+          const raw = row[key]?.toString().replace(",", ".").trim();
+          const valor = parseFloat(raw);
+          datos.usuarios[legajo].calificaciones[mes][key.trim()] = isNaN(valor) ? 0 : valor;
+        }
+      }
+    });
+    cargadoCalifs = true;
+    chequearCarga();
+  }
+});
+
+function login() {
+  const usuario = document.getElementById("login-usuario").value.trim();
+  const clave = document.getElementById("login-clave").value;
+  if (datos.usuarios[usuario] && datos.usuarios[usuario].password === clave) {
+    usuarioActual = usuario;
+    document.getElementById("login-container").classList.add("hidden");
+    if (datos.usuarios[usuario].esAdmin) {
+      document.getElementById("panel-admin").classList.remove("hidden");
+    } else {
+      document.getElementById("panel-bombero").classList.remove("hidden");
+      document.getElementById("nombre-usuario").textContent = datos.usuarios[usuario].nombre;
+      mostrarCalificaciones(usuario);
     }
+  } else {
+    alert("Usuario o clave incorrecta");
+  }
+}
+
+function logout() {
+  usuarioActual = null;
+  document.getElementById("panel-admin").classList.add("hidden");
+  document.getElementById("panel-bombero").classList.add("hidden");
+  document.getElementById("login-container").classList.remove("hidden");
+}
+
+function mostrarCalificaciones(usuarioId) {
+  const user = datos.usuarios[usuarioId];
+  const calif = user.calificaciones || {};
+  const ordenMeses = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+  const meses = Object.keys(calif).sort((a, b) => ordenMeses.indexOf(a) - ordenMeses.indexOf(b));
+  if (!meses.length) {
+    document.getElementById("tabla-calificaciones").innerHTML = "<p>No hay calificaciones aún.</p>";
+    return;
+  }
+  let html = `<label for="select-mes">Ver calificaciones de: </label><select id="select-mes">
+      <option value="ANUAL">Resumen Anual</option>`;
+  meses.forEach(mes => {
+    html += `<option value="${mes}">${mes}</option>`;
   });
+  html += `</select><br><br>`;
+  document.getElementById("tabla-calificaciones").innerHTML = html;
+  const selector = document.getElementById("select-mes");
+  selector.addEventListener("change", () => {
+    renderCalificaciones(usuarioId, selector.value);
+  });
+  renderCalificaciones(usuarioId, "ANUAL");
+}
 
-  Papa.parse('calificaciones.csv', {
-    download: true,
-    header: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-      console.log('Calificaciones cargadas:', results.data);
-      results.data.forEach(row => {
-        const legajo = row.legajo?.trim();
-        const mes = row.mes?.trim().toUpperCase();
-        if (!legajo || !mes) return;
-
-        if (!datos.usuarios[legajo]) {
-          datos.usuarios[legajo] = {
-            password: legajo,
+function renderCalificaciones(usuarioId, mesSeleccionado) {
+  const user = datos.usuarios[usuarioId];
+  const calif = user.calificaciones || {};
+  const ordenMeses = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+  const meses = Object.keys(calif).sort((a, b) => ordenMeses.indexOf(a) - ordenMeses.indexOf(b));
+  const categorias = Object.keys(calif[meses[0]] || {});
+  if (!categorias.length) return;
+  const columnasNoAcumulables = ["Porcentaje asistencias HT"];
+  const categoriasVisibles = categorias.filter(cat => !columnasNoAcumulables.includes(cat));
+  let html = "<table><thead><tr><th>Mes</th>";
+  categoriasVisibles.forEach(cat => html += `<th>${cat}</th>`);
+  html += "</tr></thead><tbody>";
+  const totales = Object.fromEntries(categoriasVisibles.map(c => [c, 0]));
+  const mesesAMostrar = mesSeleccionado === "ANUAL" ? meses : [mesSeleccionado];
+  mesesAMostrar.forEach(mes => {
+    html += `<tr><td>${mes}</td>`;
+    categoriasVisibles.forEach(cat => {
+      const val = calif[mes]?.[cat] ?? 0;
+      html += `<td>${val}</td>`;
+      if (mesSeleccionado === "ANUAL") totales[cat] += val;
+    });
+    html += "</tr>";
+  });
+  if (mesSeleccionado === "ANUAL" && meses.length > 1) {
+    html += "<tr><th>Total Anual</th>";
+    categoriasVisibles.forEach(cat => {
+      html += `<th>${totales[cat]}</th>`;
+    });
+    html += "</tr>";
+  }
+  html += "</tbody></table>";
+  let porcentajeHT = "";
+  if (mesSeleccionado !== "ANUAL") {
+    const valHT = calif[mesSeleccionado]?.["Porcentaje asistencias HT"];
+    if (valHT !== undefined) {
+      porcentajeHT = `<div class='caja-porcentaje'>Porcentaje asistencias HT: ${valHT}</div>`;
+    }
+  }
+  document.getElementById("tabla-meses").innerHTML = html + porcentajeHT;
+}
+</script>
+</body>
+</html>
