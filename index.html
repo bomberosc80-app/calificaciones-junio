@@ -12,6 +12,7 @@
     button { background:#ff4c4c; color:#fff; cursor:pointer; transition:background .3s ease; }
     button:hover { background:#cc0000; }
     .hidden { display:none; }
+    .caja-porcentaje { margin-top:15px; padding:10px; background:#222; border-radius:6px; text-align:center; }
     table { width:100%; border-collapse:collapse; margin-top:10px; background:#1a1a1a; }
     th, td { border:1px solid #333; padding:8px; text-align:center; }
     th { background:#222; }
@@ -50,80 +51,61 @@ let usuarioActual = null;
 let cargadoUsuarios = false;
 let cargadoCalifs   = false;
 
-// Inicializa estado de login
 document.addEventListener('DOMContentLoaded', () => {
   const btnLogin = document.getElementById('btnLogin');
   btnLogin.disabled = true;
   btnLogin.textContent = 'Cargando...';
-  console.log('Inicio carga de CSV...');
 });
 
 function chequearTodoCargado() {
   const btnLogin = document.getElementById('btnLogin');
-  console.log('Flags:', {cargadoUsuarios, cargadoCalifs});
   if (cargadoUsuarios && cargadoCalifs) {
     btnLogin.disabled = false;
     btnLogin.textContent = 'Entrar';
   }
 }
 
-// 1. Cargar usuarios.csv
-Papa.parse('usuarios.csv', {
-  download: true,
-  header: true,
-  skipEmptyLines: true,
-  transformHeader: h => h.trim().toLowerCase(),
-  complete: function(results) {
-    console.log('Usuarios raw headers:', Object.keys(results.data[0] || {}));
-    results.data.forEach(row => {
-      const legajo = row.legajo?.trim();
-      if (!legajo) return;
-      datos.usuarios[legajo] = {
-        password: row.clave?.trim() || legajo,
-        nombre: row.nombre?.trim() || legajo,
-        esAdmin: (row.rol || '').trim().toLowerCase() === 'admin',
-        calificaciones: {}
-      };
-    });
-    console.log('Usuarios cargados:', datos.usuarios);
-    cargadoUsuarios = true;
-    chequearTodoCargado();
-  },
-  error: function(err) {
-    console.error('Error carga usuarios.csv:', err);
-  }
-});
-
-// 2. Cargar calificaciones.csv
-Papa.parse('calificaciones.csv', {
-  download: true,
-  header: true,
-  skipEmptyLines: true,
-  transformHeader: h => h.trim().toLowerCase(),
-  complete: function(results) {
-    console.log('Califs raw headers:', Object.keys(results.data[0] || {}));
-    results.data.forEach(row => {
-      const legajo = row.legajo?.trim();
-      const mes = row.mes?.trim().toUpperCase();
-      if (!legajo || !mes) return;
-      if (!datos.usuarios[legajo]) {
-        datos.usuarios[legajo] = { password: legajo, nombre: legajo, esAdmin: false, calificaciones: {} };
-      }
-      if (!datos.usuarios[legajo].calificaciones[mes]) datos.usuarios[legajo].calificaciones[mes] = {};
-      Object.keys(row).forEach(key => {
-        if (key !== 'legajo' && key !== 'mes') {
-          const val = parseFloat(row[key]);
-          datos.usuarios[legajo].calificaciones[mes][key] = isNaN(val) ? 0 : val;
-        }
+// Carga de CSV
+document.addEventListener('DOMContentLoaded', () => {
+  Papa.parse('usuarios.csv', {
+    download: true, header: true, skipEmptyLines: true,
+    transformHeader: h => h.trim().toLowerCase(),
+    complete: function(results) {
+      results.data.forEach(row => {
+        const legajo = row.legajo?.trim();
+        if (!legajo) return;
+        datos.usuarios[legajo] = {
+          password: row.clave?.trim() || legajo,
+          nombre: row.nombre?.trim() || legajo,
+          esAdmin: (row.rol||'').trim().toLowerCase() === 'admin',
+          calificaciones: {}
+        };
       });
-    });
-    console.log('Calificaciones cargadas:', datos.usuarios);
-    cargadoCalifs = true;
-    chequearTodoCargado();
-  },
-  error: function(err) {
-    console.error('Error carga calificaciones.csv:', err);
-  }
+      cargadoUsuarios = true;
+      chequearTodoCargado();
+    }
+  });
+  Papa.parse('calificaciones.csv', {
+    download: true, header: true, skipEmptyLines: true,
+    transformHeader: h => h.trim().toLowerCase(),
+    complete: function(results) {
+      results.data.forEach(row => {
+        const legajo = row.legajo?.trim();
+        const mes = row.mes?.trim().toUpperCase();
+        if (!legajo||!mes) return;
+        if (!datos.usuarios[legajo]) datos.usuarios[legajo] = { password:legajo,nombre:legajo,esAdmin:false,calificaciones:{} };
+        if (!datos.usuarios[legajo].calificaciones[mes]) datos.usuarios[legajo].calificaciones[mes]={};
+        Object.keys(row).forEach(key => {
+          if (key!=='legajo'&&key!=='mes') {
+            const val=parseFloat(row[key]);
+            datos.usuarios[legajo].calificaciones[mes][key]=isNaN(val)?0:val;
+          }
+        });
+      });
+      cargadoCalifs = true;
+      chequearTodoCargado();
+    }
+  });
 });
 
 function login() {
@@ -141,10 +123,64 @@ function login() {
   } else alert('Usuario o clave incorrecta');
 }
 
-function logout() { usuarioActual = null; document.getElementById('panel-admin').classList.add('hidden'); document.getElementById('panel-bombero').classList.add('hidden'); document.getElementById('login-container').classList.remove('hidden'); }
+function logout() {
+  usuarioActual = null;
+  document.getElementById('panel-admin').classList.add('hidden');
+  document.getElementById('panel-bombero').classList.add('hidden');
+  document.getElementById('login-container').classList.remove('hidden');
+}
 
-function mostrarCalificaciones(id) { /* ...igual que antes...*/ }
-function renderCalificaciones(id, mes) { /* ...igual que antes...*/ }
+function mostrarCalificaciones(usuarioId) {
+  const user = datos.usuarios[usuarioId];
+  const calif = user.calificaciones || {};
+  const orden = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+  const meses = Object.keys(calif).sort((a,b)=>orden.indexOf(a)-orden.indexOf(b));
+  if (!meses.length) {
+    document.getElementById('tabla-calificaciones').innerHTML = '<p>No hay calificaciones aún.</p>';
+    document.getElementById('tabla-meses').innerHTML='';
+    return;
+  }
+  let html = `<label for="select-mes">Ver calificaciones de:</label><select id="select-mes"><option value="ANUAL">Resumen Anual</option>`;
+  meses.forEach(m=>html+=`<option value="${m}">${m}</option>`);
+  html+='</select>';
+  document.getElementById('tabla-calificaciones').innerHTML=html;
+  document.getElementById('select-mes').addEventListener('change',e=>renderCalificaciones(usuarioId,e.target.value));
+  renderCalificaciones(usuarioId,'ANUAL');
+}
+
+function renderCalificaciones(usuarioId, mesSeleccionado) {
+  const user = datos.usuarios[usuarioId];
+  const calif = user.calificaciones || {};
+  const orden = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+  const meses = Object.keys(calif).sort((a,b)=>orden.indexOf(a)-orden.indexOf(b));
+  const categorias = Object.keys(calif[meses[0]]||{});
+  // Excluir porcentaje asistencias ht de la tabla
+  const tablaCats = categorias.filter(c=>c.toLowerCase()!=='porcentaje asistencias ht');
+  // Construir tabla
+  let html = '<table><thead><tr><th>Mes</th>';
+  tablaCats.forEach(cat=>html+=`<th>${cat}</th>`);
+  html+='</tr></thead><tbody>';
+  const mesesMostrar = mesSeleccionado==='ANUAL'?meses:[mesSeleccionado];
+  mesesMostrar.forEach(mes=>{
+    html+=`<tr><td>${mes}</td>`;
+    tablaCats.forEach(cat=>{
+      html+=`<td>${calif[mes]?.[cat]||0}</td>`;
+    });
+    html+='</tr>';
+  });
+  html+='</tbody></table>';
+  // Mostrar tabla
+  document.getElementById('tabla-meses').innerHTML = html;
+  // Mostrar porcentaje asistencias HT en caja separada
+  let htVal = '';
+  if (mesSeleccionado!=='ANUAL') {
+    htVal = calif[mesSeleccionado]?.['porcentaje asistencias ht'] ?? '';
+  }
+  const caja = document.createElement('div');
+  caja.className = 'caja-porcentaje';
+  caja.textContent = `Porcentaje asistencias HT: ${htVal}`;
+  document.getElementById('tabla-meses').appendChild(caja);
+}
 </script>
 </body>
 </html>
