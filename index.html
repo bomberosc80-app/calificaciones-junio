@@ -113,14 +113,16 @@ Papa.parse("calificaciones.csv", {
 });
 
 function login() {
-  console.log("Intento login:", usuario, clave);
-console.log("Usuarios:", datos.usuarios);
-
   const usuario = document.getElementById("login-usuario").value.trim();
-  const clave = document.getElementById("login-clave").value;
+  const clave = document.getElementById("login-clave").value.trim();
+
+  console.log("Intento login:", usuario, clave);
+  console.log("Usuarios:", datos.usuarios);
+
   if (datos.usuarios[usuario] && datos.usuarios[usuario].password === clave) {
     usuarioActual = usuario;
     document.getElementById("login-container").classList.add("hidden");
+
     if (datos.usuarios[usuario].esAdmin) {
       document.getElementById("panel-admin").classList.remove("hidden");
     } else {
