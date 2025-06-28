@@ -35,7 +35,7 @@
   <h2>Bienvenido <span id="nombre-usuario"></span></h2>
   <div id="tabla-calificaciones"></div>
   <div id="tabla-meses"></div>
-  <br><button onclick="logout()">Salir</button>
+  <button onclick="logout()">Salir</button>
 </div>
 
 <div id="panel-admin" class="hidden">
@@ -55,18 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnLogin = document.getElementById('btnLogin');
   btnLogin.disabled = true;
   btnLogin.textContent = 'Cargando...';
-});
 
-function chequearTodoCargado() {
-  const btnLogin = document.getElementById('btnLogin');
-  if (cargadoUsuarios && cargadoCalifs) {
-    btnLogin.disabled = false;
-    btnLogin.textContent = 'Entrar';
-  }
-}
-
-// Carga de CSV
-document.addEventListener('DOMContentLoaded', () => {
+  // Cargar CSVs
   Papa.parse('usuarios.csv', {
     download: true, header: true, skipEmptyLines: true,
     transformHeader: h => h.trim().toLowerCase(),
@@ -92,13 +82,12 @@ document.addEventListener('DOMContentLoaded', () => {
       results.data.forEach(row => {
         const legajo = row.legajo?.trim();
         const mes = row.mes?.trim().toUpperCase();
-        if (!legajo||!mes) return;
-        if (!datos.usuarios[legajo]) datos.usuarios[legajo] = { password:legajo,nombre:legajo,esAdmin:false,calificaciones:{} };
-        if (!datos.usuarios[legajo].calificaciones[mes]) datos.usuarios[legajo].calificaciones[mes]={};
+        if (!legajo || !mes) return;
+        if (!datos.usuarios[legajo]) datos.usuarios[legajo] = { password: legajo, nombre: legajo, esAdmin: false, calificaciones: {} };
+        if (!datos.usuarios[legajo].calificaciones[mes]) datos.usuarios[legajo].calificaciones[mes] = {};
         Object.keys(row).forEach(key => {
-          if (key!=='legajo'&&key!=='mes') {
-            const val=parseFloat(row[key]);
-            datos.usuarios[legajo].calificaciones[mes][key]=isNaN(val)?0:val;
+          if (key !== 'legajo' && key !== 'mes') {
+            datos.usuarios[legajo].calificaciones[mes][key] = isNaN(parseFloat(row[key])) ? 0 : parseFloat(row[key]);
           }
         });
       });
@@ -108,19 +97,30 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+function chequearTodoCargado() {
+  const btnLogin = document.getElementById('btnLogin');
+  if (cargadoUsuarios && cargadoCalifs) {
+    btnLogin.disabled = false;
+    btnLogin.textContent = 'Entrar';
+  }
+}
+
 function login() {
   const usuario = document.getElementById('login-usuario').value.trim();
   const clave = document.getElementById('login-clave').value;
   if (datos.usuarios[usuario] && datos.usuarios[usuario].password === clave) {
     usuarioActual = usuario;
     document.getElementById('login-container').classList.add('hidden');
-    if (datos.usuarios[usuario].esAdmin) document.getElementById('panel-admin').classList.remove('hidden');
-    else {
+    if (datos.usuarios[usuario].esAdmin) {
+      document.getElementById('panel-admin').classList.remove('hidden');
+    } else {
       document.getElementById('panel-bombero').classList.remove('hidden');
       document.getElementById('nombre-usuario').textContent = datos.usuarios[usuario].nombre;
       mostrarCalificaciones(usuario);
     }
-  } else alert('Usuario o clave incorrecta');
+  } else {
+    alert('Usuario o clave incorrecta');
+  }
 }
 
 function logout() {
@@ -131,55 +131,75 @@ function logout() {
 }
 
 function mostrarCalificaciones(usuarioId) {
-  const user = datos.usuarios[usuarioId];
-  const calif = user.calificaciones || {};
+  const datosUser = datos.usuarios[usuarioId].calificaciones;
   const orden = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
-  const meses = Object.keys(calif).sort((a,b)=>orden.indexOf(a)-orden.indexOf(b));
+  const meses = Object.keys(datosUser).sort((a,b)=>orden.indexOf(a)-orden.indexOf(b));
+  const contSelect = document.getElementById('tabla-calificaciones');
+  contSelect.innerHTML = '';
   if (!meses.length) {
-    document.getElementById('tabla-calificaciones').innerHTML = '<p>No hay calificaciones aún.</p>';
-    document.getElementById('tabla-meses').innerHTML='';
+    contSelect.innerHTML = '<p>No hay calificaciones aún.</p>';
+    document.getElementById('tabla-meses').innerHTML = '';
     return;
   }
-  let html = `<label for="select-mes">Ver calificaciones de:</label><select id="select-mes"><option value="ANUAL">Resumen Anual</option>`;
-  meses.forEach(m=>html+=`<option value="${m}">${m}</option>`);
-  html+='</select>';
-  document.getElementById('tabla-calificaciones').innerHTML=html;
-  document.getElementById('select-mes').addEventListener('change',e=>renderCalificaciones(usuarioId,e.target.value));
-  renderCalificaciones(usuarioId,'ANUAL');
+  const select = document.createElement('select');
+  select.id = 'select-mes';
+  const optAll = document.createElement('option'); optAll.value='ANUAL'; optAll.textContent='Resumen Anual'; select.append(optAll);
+  meses.forEach(m=>{
+    const opt = document.createElement('option'); opt.value=m; opt.textContent=m; select.append(opt);
+  });
+  contSelect.append(select);
+  select.addEventListener('change',()=>renderCalificaciones(usuarioId, select.value));
+  renderCalificaciones(usuarioId, 'ANUAL');
 }
 
 function renderCalificaciones(usuarioId, mesSeleccionado) {
-  const user = datos.usuarios[usuarioId];
-  const calif = user.calificaciones || {};
+  const datosUser = datos.usuarios[usuarioId].calificaciones;
   const orden = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
-  const meses = Object.keys(calif).sort((a,b)=>orden.indexOf(a)-orden.indexOf(b));
-  const categorias = Object.keys(calif[meses[0]]||{});
-  // Excluir porcentaje asistencias ht de la tabla
-  const tablaCats = categorias.filter(c=>c.toLowerCase()!=='porcentaje asistencias ht');
-  // Construir tabla
-  let html = '<table><thead><tr><th>Mes</th>';
-  tablaCats.forEach(cat=>html+=`<th>${cat}</th>`);
-  html+='</tr></thead><tbody>';
-  const mesesMostrar = mesSeleccionado==='ANUAL'?meses:[mesSeleccionado];
-  mesesMostrar.forEach(mes=>{
-    html+=`<tr><td>${mes}</td>`;
-    tablaCats.forEach(cat=>{
-      html+=`<td>${calif[mes]?.[cat]||0}</td>`;
-    });
-    html+='</tr>';
-  });
-  html+='</tbody></table>';
-  // Mostrar tabla
-  document.getElementById('tabla-meses').innerHTML = html;
-  // Mostrar porcentaje asistencias HT en caja separada
-  let htVal = '';
-  if (mesSeleccionado!=='ANUAL') {
-    htVal = calif[mesSeleccionado]?.['porcentaje asistencias ht'] ?? '';
+  const meses = Object.keys(datosUser).sort((a,b)=>orden.indexOf(a)-orden.indexOf(b));
+  const todasCats = Object.keys(datosUser[meses[0]] || {});
+  const tablaCats = todasCats.filter(c=>c.toLowerCase()!=='porcentaje asistencias ht');
+
+  const cont = document.getElementById('tabla-meses');
+  cont.innerHTML = '';
+
+  if (!tablaCats.length) {
+    cont.innerHTML = '<p>No hay datos para mostrar.</p>';
+    return;
   }
+
+  // Construir tabla
+  const table = document.createElement('table');
+  const thead = document.createElement('thead');
+  const trHead = document.createElement('tr');
+  trHead.innerHTML = '<th>Mes</th>' + tablaCats.map(cat=>`<th>${cat}</th>`).join('');
+  thead.append(trHead);
+
+  const tbody = document.createElement('tbody');
+  const mesesAMostrar = mesSeleccionado==='ANUAL'?meses:[mesSeleccionado];
+  mesesAMostrar.forEach(mes=>{
+    const tr = document.createElement('tr');
+    let rowHtml = `<td>${mes}</td>`;
+    tablaCats.forEach(cat=>{
+      const val = datosUser[mes][cat] != null ? datosUser[mes][cat] : 0;
+      rowHtml += `<td>${val}</td>`;
+    });
+    tr.innerHTML = rowHtml;
+    tbody.append(tr);
+  });
+
+  table.append(thead, tbody);
+  cont.append(table);
+
+  // Mostrar porcentaje asistencias HT en caja separada
   const caja = document.createElement('div');
   caja.className = 'caja-porcentaje';
-  caja.textContent = `Porcentaje asistencias HT: ${htVal}`;
-  document.getElementById('tabla-meses').appendChild(caja);
+  let textoHT = '';
+  if (mesSeleccionado !== 'ANUAL') {
+    const ht = datosUser[mesSeleccionado]['porcentaje asistencias ht'];
+    textoHT = ht != null ? ht : '0';
+  }
+  caja.textContent = `Porcentaje asistencias HT: ${textoHT}`;
+  cont.append(caja);
 }
 </script>
 </body>
