@@ -92,7 +92,11 @@ Papa.parse("calificaciones.csv", {
 
       for (const key in row) {
         if (!['legajo', 'nombre', 'mes'].includes(key)) {
-          const valor = parseFloat(row[key].replace(',', '.'));
+          let raw = row[key];
+          if (typeof raw === 'string') {
+            raw = raw.replace(',', '.').trim();
+          }
+          const valor = parseFloat(raw);
           datos.usuarios[legajo].calificaciones[mes][key] = isNaN(valor) ? 0 : valor;
         }
       }
@@ -203,9 +207,4 @@ function renderCalificaciones(usuarioId, mesSeleccionado) {
 
   html += "</tbody></table>";
   document.getElementById("tabla-meses").innerHTML = html;
-  document.getElementById("asistencias-box").innerHTML = porcentajeBox.length ?
-    `<h4>Porcentaje Asistencias HT</h4><p>${porcentajeBox.join("<br>")}</p>` : "";
-}
-</script>
-</body>
-</html>
+  document.getElementById("asistencias-box").innerHTM
