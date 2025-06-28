@@ -64,7 +64,7 @@ Papa.parse("usuarios.csv", {
   complete: function(results) {
     console.log("Usuarios cargados:", results.data);
     results.data.forEach(row => {
-      const legajo = row.legajo?.trim();
+      const legajo = row.legajo?.trim().toUpperCase();
       if (!legajo) return;
       datos.usuarios[legajo] = {
         password: row.clave?.trim() || legajo,
@@ -113,7 +113,7 @@ Papa.parse("calificaciones.csv", {
 });
 
 function login() {
-  const usuario = document.getElementById("login-usuario").value.trim();
+  const usuario = document.getElementById("login-usuario").value.trim().toUpperCase();
   const clave = document.getElementById("login-clave").value.trim();
 
   console.log("Intento login:", usuario, clave);
