@@ -168,4 +168,8 @@ button:hover {
 #tablaCalificaciones {
   transition: opacity 0.4s ease;
 }
+  .fade-refresh {
+  animation: fadeInUp 0.4s ease-out;
+}
+
 }
