@@ -162,43 +162,46 @@ function mostrarCalificaciones(usuarioId) {
 function renderCalificaciones(usuarioId, mesSeleccionado) {
   const user = datos.usuarios[usuarioId];
   const calif = user.calificaciones || {};
+
   const ordenMeses = [
     "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
     "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
   ];
-  const meses = Object.keys(calif).sort((a, b) =>
-    ordenMeses.indexOf(a) - ordenMeses.indexOf(b)
-  );
 
-  const categorias = Object.keys(calif[meses[0]] || {});
-  if (!categorias.length) return;
+  const meses = Object.keys(calif).sort((a, b) => ordenMeses.indexOf(a) - ordenMeses.indexOf(b));
 
+  // Recolectar todas las categorías presentes en todos los meses (evitar vacíos)
+  let categoriasSet = new Set();
+  meses.forEach(m => {
+    Object.keys(calif[m] || {}).forEach(c => {
+      if (c && c.trim()) categoriasSet.add(c);
+    });
+  });
+  const categorias = Array.from(categoriasSet);
+
+  // Construir encabezado
   let html = "<table><thead><tr><th>Mes</th>";
-  categorias.forEach(cat => html += `<th>${cat}</th>`);
+  categorias.forEach(cat => {
+    html += `<th>${cat}</th>`;
+  });
   html += "</tr></thead><tbody>";
 
-  const totales = Object.fromEntries(categorias.map(c => [c, 0]));
-  const mesesAMostrar = mesSeleccionado === "ANUAL" ? meses : [mesSeleccionado];
-
-  mesesAMostrar.forEach(mes => {
+  // Construir filas de datos
+  meses.forEach(mes => {
+    if (mesSeleccionado !== "ANUAL" && mes !== mesSeleccionado) return;
     html += `<tr><td>${mes}</td>`;
     categorias.forEach(cat => {
-      const val = calif[mes]?.[cat] ?? 0;
-      html += `<td>${val}</td>`;
-      totales[cat] += val;
+      const valor = calif[mes]?.[cat] ?? "";
+      html += `<td>${valor}</td>`;
     });
     html += "</tr>";
   });
 
-  if (mesSeleccionado === "ANUAL" && meses.length > 1) {
-    html += "<tr><th>Total Anual</th>";
-    categorias.forEach(cat => html += `<th>${totales[cat]}</th>`);
-    html += "</tr>";
-  }
-
   html += "</tbody></table>";
-  document.getElementById("tabla-meses").innerHTML = html;
+
+  document.getElementById("tabla-calificaciones").innerHTML = html;
 }
+
 </script>
 </body>
 </html>
