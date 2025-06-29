@@ -115,3 +115,32 @@ function previsualizarCSV() {
   };
   lector.readAsText(archivo);
 }
+function mostrarPorcentajeHT(usuarioId) {
+  fetch('https://raw.githubusercontent.com/bomberosc80-app/calificaciones-c80/main/porcentajeht.csv')
+    .then(res => res.text())
+    .then(data => {
+      const lineas = data.trim().split("\n").slice(1); // Omitir encabezado
+      let porcentaje = null;
+
+      for (let linea of lineas) {
+        const [id, valor] = linea.split(",");
+        if (id === usuarioId) {
+          porcentaje = parseFloat(valor);
+          break;
+        }
+      }
+
+      const div = document.getElementById("porcentajeAsistencias");
+
+      if (porcentaje !== null) {
+        div.textContent = `Porcentaje de Asistencias a intervenciones: ${porcentaje.toFixed(1)}%`;
+        div.classList.remove("hidden");
+      } else {
+        div.textContent = "";
+        div.classList.add("hidden");
+      }
+    })
+    .catch(err => {
+      console.error("Error al cargar porcentajeht.csv:", err);
+    });
+}
