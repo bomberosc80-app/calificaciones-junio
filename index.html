@@ -1,204 +1,171 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Calificaciones C80</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>App Calificaciones C80</title>
   <style>
-    body { background: #0d0d0d; color: #ff4c4c; font-family: 'Segoe UI', sans-serif; padding: 20px; margin: 0; }
-    h2, h3, h4 { color: #ff4c4c; }
-    input, button, select { padding:10px; margin:5px 0; border:none; border-radius:6px; font-size:1em; width:100%; box-sizing:border-box; }
-    input, select { background:#222; color:#eee; }
-    button { background:#ff4c4c; color:#fff; cursor:pointer; transition:background .3s ease; }
-    button:hover { background:#cc0000; }
-    .hidden { display:none; }
-    table { width:100%; border-collapse:collapse; margin-top:10px; background:#1a1a1a; }
-    th, td { border:1px solid #333; padding:8px; text-align:center; }
-    th { background:#222; }
-    tr:hover { background:#2a2a2a; }
-    #login-container, #panel-bombero, #panel-admin { max-width:600px; margin:auto; }
-    hr { border:1px solid #444; margin:20px 0; }
+    body { font-family: sans-serif; background: #121212; color: #fff; margin: 0; padding: 20px; }
+    .hidden { display: none; }
+    input, select, button { margin: 5px 0; padding: 10px; border-radius: 5px; border: none; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 10px; border: 1px solid #444; text-align: center; }
+    th { background-color: #333; }
+    .container { max-width: 800px; margin: auto; }
+    .admin-panel { background: #1e1e1e; padding: 15px; margin-top: 20px; border-radius: 10px; }
   </style>
 </head>
 <body>
+<div class="container">
+  <h2>Calificaciones C80</h2>
 
-<div id="login-container">
-  <img src="cuartel.jpg" alt="Cuartel de Bomberos" style="width:100%; border-radius:12px; margin-bottom:10px;">
-  <h2>Ingreso</h2>
-  <input type="text" id="login-usuario" placeholder="Legajo"><br>
-  <input type="password" id="login-clave" placeholder="Clave"><br>
-  <button onclick="login()">Entrar</button>
+  <div id="login">
+    <p><strong>Iniciar Sesión</strong></p>
+    <input type="text" id="usuario" placeholder="ID" />
+    <input type="password" id="clave" placeholder="Clave" />
+    <button onclick="iniciarSesion()">Ingresar</button>
+  </div>
+
+  <div id="app" class="hidden">
+    <p>Bienvenido/a: <strong id="nombreUsuario"></strong></p>
+    <select id="selectorMes" onchange="cambiarMes()">
+      <option value="ANUAL">Resumen Anual</option>
+      <option value="ENERO">Enero</option>
+      <option value="FEBRERO">Febrero</option>
+      <option value="MARZO">Marzo</option>
+      <option value="ABRIL">Abril</option>
+      <option value="MAYO">Mayo</option>
+      <option value="JUNIO">Junio</option>
+      <option value="JULIO">Julio</option>
+      <option value="AGOSTO">Agosto</option>
+      <option value="SEPTIEMBRE">Septiembre</option>
+      <option value="OCTUBRE">Octubre</option>
+      <option value="NOVIEMBRE">Noviembre</option>
+      <option value="DICIEMBRE">Diciembre</option>
+    </select>
+    <div id="tablaCalificaciones"></div>
+  </div>
+
+  <div id="adminPanel" class="admin-panel hidden">
+    <h3>Panel del Administrador</h3>
+    <input type="file" accept=".csv" onchange="previsualizarCSV(event)" />
+    <div id="previewCSV"></div>
+    <button onclick="confirmarCargaCSV()">Cargar Calificaciones</button>
+  </div>
 </div>
 
-<div id="panel-bombero" class="hidden">
-  <h2>Bienvenido <span id="nombre-usuario"></span></h2>
-  <div id="tabla-calificaciones"></div>
-  <div id="tabla-meses"></div>
-  <br><button onclick="logout()">Salir</button>
-</div>
-
-<div id="panel-admin" class="hidden">
-  <h2>Panel de administración</h2>
-  <p>Bienvenido, administrador.</p>
-  <button onclick="logout()">Salir</button>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 <script>
-let datos = { usuarios: {} };
-let usuarioActual = null;
-
-// 1. Cargar usuarios.csv
-Papa.parse("usuarios.csv", {
-  download: true,
-  header: true,
-  skipEmptyLines: true,
-  complete: function(results) {
-    results.data.forEach(row => {
-      const legajo = row.legajo?.trim();
-      if (!legajo) return;
-      datos.usuarios[legajo] = {
-        password: row.clave?.trim() || legajo,
-        nombre: row.nombre?.trim() || legajo,
-        esAdmin: row.rol?.trim().toLowerCase() === "admin",
-        calificaciones: {}
-      };
-    });
-  }
-});
-
-// 2. Cargar calificaciones.csv
-Papa.parse("calificaciones.csv", {
-  download: true,
-  header: true,
-  skipEmptyLines: true,
-  complete: function(results) {
-    results.data.forEach(row => {
-      const legajo = row.legajo?.trim();
-      const mes = row.mes?.trim().toUpperCase();
-      if (!legajo || !mes) return;
-
-      if (!datos.usuarios[legajo]) {
-        datos.usuarios[legajo] = {
-          password: legajo,
-          nombre: legajo,
-          esAdmin: false,
-          calificaciones: {}
-        };
-      }
-
-      if (!datos.usuarios[legajo].calificaciones[mes]) {
-        datos.usuarios[legajo].calificaciones[mes] = {};
-      }
-
-      for (const key in row) {
-        if (!["legajo", "nombre", "mes"].includes(key)) {
-          const valor = parseFloat(row[key]);
-          datos.usuarios[legajo].calificaciones[mes][key] = isNaN(valor) ? 0 : valor;
-        }
-      }
-    });
-  }
-});
-
-function login() {
-  const usuario = document.getElementById("login-usuario").value.trim();
-  const clave = document.getElementById("login-clave").value;
-
-  if (datos.usuarios[usuario] && datos.usuarios[usuario].password === clave) {
-    usuarioActual = usuario;
-    document.getElementById("login-container").classList.add("hidden");
-
-    if (datos.usuarios[usuario].esAdmin) {
-      document.getElementById("panel-admin").classList.remove("hidden");
-    } else {
-      document.getElementById("panel-bombero").classList.remove("hidden");
-      document.getElementById("nombre-usuario").textContent = datos.usuarios[usuario].nombre;
-      mostrarCalificaciones(usuario);
+const datos = {
+  usuarios: {
+    "c80306": {
+      CLAVE: "bvsp1959",
+      NOMBRE: "Sergio"
+    },
+    "juan23": {
+      CLAVE: "1234",
+      NOMBRE: "Juan Pérez"
+    },
+    "admin": {
+      CLAVE: "admin123",
+      NOMBRE: "Administrador"
     }
+  }
+};
+
+let usuarioActual = null;
+let datosCalificaciones = {}; // Calificaciones separadas, se cargan desde CSV
+
+function iniciarSesion() {
+  const usuario = document.getElementById("usuario").value.trim();
+  const clave = document.getElementById("clave").value.trim();
+  const user = datos.usuarios[usuario];
+
+  if (user && user.CLAVE === clave) {
+    usuarioActual = usuario;
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+    document.getElementById("nombreUsuario").innerText = user.NOMBRE || usuario;
+    if (usuario === "admin") {
+      document.getElementById("adminPanel").classList.remove("hidden");
+    }
+    renderCalificaciones(usuario, "ANUAL");
   } else {
-    alert("Usuario o clave incorrecta");
+    alert("Usuario o clave incorrectos.");
   }
 }
 
-function logout() {
-  usuarioActual = null;
-  document.getElementById("panel-admin").classList.add("hidden");
-  document.getElementById("panel-bombero").classList.add("hidden");
-  document.getElementById("login-container").classList.remove("hidden");
-}
-
-function mostrarCalificaciones(usuarioId) {
-  const user = datos.usuarios[usuarioId];
-  const calif = user.calificaciones || {};
-const ordenMeses = [
-  "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
-  "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
-];
-const meses = Object.keys(calif).sort((a, b) =>
-  ordenMeses.indexOf(a) - ordenMeses.indexOf(b)
-); 
-  if (meses.length === 0) {
-    document.getElementById("tabla-calificaciones").innerHTML = "<p>No hay calificaciones aún.</p>";
-    return;
-  }
-
-  let html = `<label for="select-mes">Ver calificaciones de: </label>
-    <select id="select-mes">
-      <option value="ANUAL">Resumen Anual</option>`;
-  meses.forEach(mes => {
-    html += `<option value="${mes}">${mes}</option>`;
-  });
-  html += `</select><br><br>`;
-  document.getElementById("tabla-calificaciones").innerHTML = html;
-
-  const selector = document.getElementById("select-mes");
-  selector.addEventListener("change", () => {
-    renderCalificaciones(usuarioId, selector.value);
-  });
-
-  renderCalificaciones(usuarioId, "ANUAL");
+function cambiarMes() {
+  const mes = document.getElementById("selectorMes").value;
+  renderCalificaciones(usuarioActual, mes);
 }
 
 function renderCalificaciones(usuarioId, mesSeleccionado) {
   const user = datos.usuarios[usuarioId];
-  const calif = user.calificaciones || {};
+  const calif = datosCalificaciones[usuarioId] || {};
   const ordenMeses = [
-  "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
-  "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
-];
-const meses = Object.keys(calif).sort((a, b) =>
-  ordenMeses.indexOf(a) - ordenMeses.indexOf(b)
-);
+    "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
+    "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
+  ];
 
-  const categorias = Object.keys(calif[meses[0]] || {});
-  if (!categorias.length) return;
-
-  let html = "<table><thead><tr><th>Mes</th>";
-  categorias.forEach(cat => html += `<th>${cat}</th>`);
-  html += "</tr></thead><tbody>";
-
-  const totales = Object.fromEntries(categorias.map(c => [c, 0]));
-  const mesesAMostrar = mesSeleccionado === "ANUAL" ? meses : [mesSeleccionado];
-
-  mesesAMostrar.forEach(mes => {
-    html += `<tr><td>${mes}</td>`;
-    categorias.forEach(cat => {
-      const val = calif[mes]?.[cat] ?? 0;
-      html += `<td>${val}</td>`;
-      totales[cat] += val;
-    });
-    html += "</tr>";
-  });
-
-  if (mesSeleccionado === "ANUAL" && meses.length > 1) {
-    html += "<tr><th>Total Anual</th>";
-    categorias.forEach(cat => html += `<th>${totales[cat]}</th>`);
-    html += "</tr>";
+  let html = "<table><tr>";
+  if (mesSeleccionado === "ANUAL") {
+    html += "<th>Mes</th><th>Calificación</th></tr>";
+    let suma = 0, cantidad = 0;
+    for (let mes of ordenMeses) {
+      const valor = calif[mes];
+      if (valor !== undefined && valor !== "") {
+        html += `<tr><td>${mes}</td><td>${valor}</td></tr>`;
+        suma += parseFloat(valor);
+        cantidad++;
+      }
+    }
+    const promedio = cantidad > 0 ? (suma / cantidad).toFixed(2) : "-";
+    html += `<tr><th>Promedio</th><th>${promedio}</th></tr>`;
+  } else {
+    html += `<th>${mesSeleccionado}</th></tr>`;
+    html += `<tr><td>${calif[mesSeleccionado] || "Sin dato"}</td></tr>`;
   }
+  html += "</table>";
+  document.getElementById("tablaCalificaciones").innerHTML = html;
+}
 
-  html += "</tbody></table>";
-  document.getElementById("tabla-meses").innerHTML = html;
+function previsualizarCSV(event) {
+  const archivo = event.target.files[0];
+  if (!archivo) return;
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const contenido = e.target.result;
+    const filas = contenido.split(/\r?\n/).map(f => f.split(","));
+    let html = "<table><tr>" + filas[0].map(c => `<th>${c}</th>`).join("") + "</tr>";
+    for (let i = 1; i < filas.length; i++) {
+      if (filas[i].length > 1) {
+        html += "<tr>" + filas[i].map(c => `<td>${c}</td>`).join("") + "</tr>";
+      }
+    }
+    html += "</table>";
+    document.getElementById("previewCSV").innerHTML = html;
+    window.datosCSVTemporal = filas;
+  };
+  reader.readAsText(archivo);
+}
+
+function confirmarCargaCSV() {
+  const filas = window.datosCSVTemporal;
+  if (!filas || filas.length < 2) return alert("No hay datos para cargar");
+  const cabeceras = filas[0];
+  for (let i = 1; i < filas.length; i++) {
+    const fila = filas[i];
+    const id = fila[0];
+    if (!id) continue;
+    datosCalificaciones[id] = {};
+    for (let j = 1; j < cabeceras.length; j++) {
+      datosCalificaciones[id][cabeceras[j]] = fila[j];
+    }
+  }
+  alert("Calificaciones cargadas correctamente.");
+  if (usuarioActual && usuarioActual !== "admin") {
+    renderCalificaciones(usuarioActual, document.getElementById("selectorMes").value);
+  }
 }
 </script>
 </body>
