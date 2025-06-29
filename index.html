@@ -148,27 +148,28 @@
       document.getElementById("tablaCalificaciones").innerHTML = html;
     }
 
-    function cargarCSVDesdeGitHub() {
-      fetch("calificaciones.csv")
-        .then(res => res.text())
-        .then(text => {
-          const lines = text.trim().split("\n");
-          const headers = lines[0].split(",");
-          calificaciones = {};
-          for (let i = 1; i < lines.length; i++) {
-            const cols = lines[i].split(",");
-            const id = cols[0];
-            calificaciones[id] = {};
-            for (let j = 1; j < headers.length; j++) {
-              calificaciones[id][headers[j].trim()] = cols[j]?.trim();
-            }
-          }
-          cambiarMes(); // Actualiza vista tras carga
-        })
-        .catch(err => {
-          console.error("Error al cargar CSV desde GitHub:", err);
-        });
-    }
+function cargarCSVDesdeGitHub() {
+  fetch("https://bomberosc80-app.github.io/calificaciones-junio/calificaciones.csv")
+    .then(res => res.text())
+    .then(text => {
+      const lines = text.trim().split("\n");
+      const headers = lines[0].split(",");
+      calificaciones = {};
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(",");
+        const id = cols[0];
+        calificaciones[id] = {};
+        for (let j = 1; j < headers.length; j++) {
+          calificaciones[id][headers[j].trim()] = cols[j]?.trim();
+        }
+      }
+      cambiarMes(); // Muestra la tabla
+    })
+    .catch(err => {
+      console.error("Error al cargar CSV desde GitHub:", err);
+    });
+}
+
 
     // ADMIN: Previsualización y carga desde archivo local
     function previsualizarCSV() {
