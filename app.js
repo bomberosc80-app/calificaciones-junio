@@ -1,37 +1,38 @@
-let datos = {
-  usuarios: {
-    "c80306": { CLAVE: "bvsp1959", NOMBRE: "Sergio" },
-    "admin": { CLAVE: "admin123", NOMBRE: "Administrador" },
-    "juan23": { CLAVE: "1234", NOMBRE: "Juan Pérez" }
-  }
+
+let datos = {};
+const usuarios = {
+  "c80306": { CLAVE: "bvsp1959", NOMBRE: "Sergio" },
+  "admin": { CLAVE: "admin123", NOMBRE: "Administrador" },
+  "juan23": { CLAVE: "1234", NOMBRE: "Juan Pérez" }
 };
 let usuarioActual = null;
-let calificaciones = [];
 
 async function iniciarSesion() {
   const usuario = document.getElementById("usuario").value.trim();
   const clave = document.getElementById("clave").value.trim();
-  const user = datos.usuarios[usuario];
+  const user = usuarios[usuario];
 
   if (user && user.CLAVE === clave) {
     usuarioActual = usuario;
     document.getElementById("login").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
-    document.getElementById("nombreUsuario").innerText = user.NOMBRE;
-
-    if (usuario === "admin") {
-      document.getElementById("adminPanel").classList.remove("hidden");
-    }
-
-    await cargarCSV();
-    renderCalificaciones("ANUAL");
+    document.getElementById("nombreUsuario").innerText = user.NOMBRE || usuario;
+    if (usuario === "admin") document.getElementById("panelAdmin").classList.remove("hidden");
+    await cargarDatos();
+    cambiarMes();
   } else {
     alert("Usuario o clave incorrectos.");
   }
 }
 
 function cerrarSesion() {
-  location.reload();
+  usuarioActual = null;
+  document.getElementById("login").classList.remove("hidden");
+  document.getElementById("app").classList.add("hidden");
+  document.getElementById("panelAdmin").classList.add("hidden");
+  document.getElementById("usuario").value = "";
+  document.getElementById("clave").value = "";
+  document.getElementById("tablaCalificaciones").innerHTML = "";
 }
 
 function cambiarMes() {
@@ -39,91 +40,73 @@ function cambiarMes() {
   renderCalificaciones(mes);
 }
 
-async function cargarCSV() {
+async function cargarDatos() {
   const url = "calificaciones.csv";
   const response = await fetch(url);
-  const data = await response.text();
-  const rows = data.split("\n").filter(r => r.trim() !== "");
-  const headers = rows[0].split(",").map(h => h.trim());
-  calificaciones = rows.slice(1).map(row => {
-    const cols = row.split(",");
-    const obj = {};
-    headers.forEach((h, i) => obj[h] = cols[i]);
-    return obj;
-  });
+  const texto = await response.text();
+  const lineas = texto.split("\n").filter(l => l.trim() !== "");
+  const headers = lineas[0].split(",");
+  datos = {};
+  for (let i = 1; i < lineas.length; i++) {
+    const fila = lineas[i].split(",");
+    const legajo = fila[0];
+    const nombre = fila[1];
+    const mes = fila[2];
+    if (!datos[legajo]) datos[legajo] = { nombre, calificaciones: {} };
+    datos[legajo].calificaciones[mes] = {};
+    for (let j = 3; j < headers.length - 1; j++) {
+      datos[legajo].calificaciones[mes][headers[j]] = parseFloat(fila[j]) || 0;
+    }
+    datos[legajo].calificaciones[mes]["TOTAL"] = parseFloat(fila[headers.length - 1]) || 0;
+  }
 }
 
-function renderCalificaciones(mes) {
-  const tabla = document.getElementById("tablaCalificaciones");
-  if (!calificaciones.length) {
-    tabla.innerHTML = "<p>No hay datos cargados.</p>";
-    return;
+function renderCalificaciones(mesSeleccionado) {
+  const calif = datos[usuarioActual]?.calificaciones || {};
+  const categorias = ["Ded.Interna", "Roperia", "Asist.Diaria", "O.Interno", "Instruccion", "AAccidental", "Guardia", "P.Neg", "P.Esp", "TOTAL"];
+  let html = "<table><tr><th>Mes</th>" + categorias.map(c => `<th>${c}</th>`).join("") + "</tr>";
+  const ordenMeses = ["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
+  let totales = {};
+  for (let c of categorias) totales[c] = 0;
+
+  for (let mes of ordenMeses) {
+    if (mesSeleccionado !== "ANUAL" && mes !== mesSeleccionado) continue;
+    const fila = calif[mes];
+    if (!fila) continue;
+    html += `<tr><td>${mes}</td>`;
+    for (let c of categorias) {
+      const val = fila[c] || 0;
+      html += `<td>${val}</td>`;
+      totales[c] += val;
+    }
+    html += "</tr>";
   }
 
-  const filtradas = mes === "ANUAL" ? calificaciones : calificaciones.filter(f => f.mes === mes);
-  let html = "<table><tr><th>Legajo</th><th>Nombre</th><th>Ded. Interna</th><th>Ropería</th><th>Asist. Diaria</th><th>O. Interno</th><th>Instrucción</th><th>AAccidental</th><th>Guardia</th><th>P.Neg</th><th>P.Esp</th><th>TOTAL</th></tr>";
-
-  let suma = {
-    ded: 0, rop: 0, asist: 0, oint: 0, instr: 0, aacc: 0, guard: 0, pneg: 0, pesp: 0, total: 0
-  };
-
-  filtradas.forEach(f => {
-    html += `<tr>
-      <td>${f.legajo}</td>
-      <td>${f.nombre}</td>
-      <td>${f["Ded.Interna"]}</td>
-      <td>${f["Roperia"]}</td>
-      <td>${f["Asist.Diaria"]}</td>
-      <td>${f["O.Interno"]}</td>
-      <td>${f["Instruccion"]}</td>
-      <td>${f["AAccidental"]}</td>
-      <td>${f["Guardia"]}</td>
-      <td>${f["P.Neg"]}</td>
-      <td>${f["P.Esp"]}</td>
-      <td>${f["TOTAL"]}</td>
-    </tr>`;
-    suma.ded += parseFloat(f["Ded.Interna"] || 0);
-    suma.rop += parseFloat(f["Roperia"] || 0);
-    suma.asist += parseFloat(f["Asist.Diaria"] || 0);
-    suma.oint += parseFloat(f["O.Interno"] || 0);
-    suma.instr += parseFloat(f["Instruccion"] || 0);
-    suma.aacc += parseFloat(f["AAccidental"] || 0);
-    suma.guard += parseFloat(f["Guardia"] || 0);
-    suma.pneg += parseFloat(f["P.Neg"] || 0);
-    suma.pesp += parseFloat(f["P.Esp"] || 0);
-    suma.total += parseFloat(f["TOTAL"] || 0);
-  });
-
-  html += `<tr style="font-weight:bold;background:#222;">
-    <td colspan="2">Totales</td>
-    <td>${suma.ded.toFixed(2)}</td>
-    <td>${suma.rop.toFixed(2)}</td>
-    <td>${suma.asist.toFixed(2)}</td>
-    <td>${suma.oint.toFixed(2)}</td>
-    <td>${suma.instr.toFixed(2)}</td>
-    <td>${suma.aacc.toFixed(2)}</td>
-    <td>${suma.guard.toFixed(2)}</td>
-    <td>${suma.pneg.toFixed(2)}</td>
-    <td>${suma.pesp.toFixed(2)}</td>
-    <td>${suma.total.toFixed(2)}</td>
-  </tr>`;
+  if (mesSeleccionado === "ANUAL") {
+    html += `<tr class="admin-total"><td><strong>TOTAL ANUAL</strong></td>`;
+    for (let c of categorias) {
+      html += `<td><strong>${totales[c].toFixed(2)}</strong></td>`;
+    }
+    html += "</tr>";
+  }
 
   html += "</table>";
-  tabla.innerHTML = html;
+  document.getElementById("tablaCalificaciones").innerHTML = html;
 }
 
 function previsualizarCSV() {
-  const input = document.getElementById("fileInput");
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    const preview = e.target.result.split("\n").slice(0, 5).join("\n");
-    document.getElementById("previewContainer").innerText = preview;
+  const archivo = document.getElementById("archivoCSV").files[0];
+  if (!archivo) return alert("Selecciona un archivo CSV.");
+  const lector = new FileReader();
+  lector.onload = function(e) {
+    const lineas = e.target.result.split("\n").filter(l => l.trim() !== "");
+    let html = "<table>";
+    for (let i = 0; i < lineas.length; i++) {
+      const columnas = lineas[i].split(",");
+      html += "<tr>" + columnas.map(col => `<td>${col}</td>`).join("") + "</tr>";
+    }
+    html += "</table>";
+    document.getElementById("preview").innerHTML = html;
   };
-  if (input.files.length) {
-    reader.readAsText(input.files[0]);
-  }
-}
-
-function confirmarCarga() {
-  alert("Carga confirmada. (Simulado, ya que el navegador no puede escribir archivos en el servidor)");
+  lector.readAsText(archivo);
 }
