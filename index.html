@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Calificaciones C80</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
   <style>
     body { background: #0d0d0d; color: #ff4c4c; font-family: 'Segoe UI', sans-serif; padding: 20px; margin: 0; }
     h2, h3, h4 { color: #ff4c4c; }
@@ -24,6 +23,7 @@
 <body>
 
 <div id="login-container">
+  <img src="cuartel.jpg" alt="Cuartel de Bomberos" style="width:100%; border-radius:12px; margin-bottom:10px;">
   <h2>Ingreso</h2>
   <input type="text" id="login-usuario" placeholder="Legajo"><br>
   <input type="password" id="login-clave" placeholder="Clave"><br>
@@ -34,7 +34,6 @@
   <h2>Bienvenido <span id="nombre-usuario"></span></h2>
   <div id="tabla-calificaciones"></div>
   <div id="tabla-meses"></div>
-  <div id="asistencias-box"></div>
   <br><button onclick="logout()">Salir</button>
 </div>
 
@@ -44,17 +43,19 @@
   <button onclick="logout()">Salir</button>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
 <script>
 let datos = { usuarios: {} };
 let usuarioActual = null;
 
+// 1. Cargar usuarios.csv
 Papa.parse("usuarios.csv", {
   download: true,
   header: true,
   skipEmptyLines: true,
   complete: function(results) {
     results.data.forEach(row => {
-      const legajo = row.legajo?.trim().toUpperCase();
+      const legajo = row.legajo?.trim();
       if (!legajo) return;
       datos.usuarios[legajo] = {
         password: row.clave?.trim() || legajo,
@@ -66,13 +67,14 @@ Papa.parse("usuarios.csv", {
   }
 });
 
+// 2. Cargar calificaciones.csv
 Papa.parse("calificaciones.csv", {
   download: true,
   header: true,
   skipEmptyLines: true,
   complete: function(results) {
     results.data.forEach(row => {
-      const legajo = row.legajo?.trim().toUpperCase();
+      const legajo = row.legajo?.trim();
       const mes = row.mes?.trim().toUpperCase();
       if (!legajo || !mes) return;
 
@@ -90,12 +92,8 @@ Papa.parse("calificaciones.csv", {
       }
 
       for (const key in row) {
-        if (!['legajo', 'nombre', 'mes'].includes(key)) {
-          let raw = row[key];
-          if (typeof raw === 'string') {
-            raw = raw.replace(',', '.').trim();
-          }
-          const valor = parseFloat(raw);
+        if (!["legajo", "nombre", "mes"].includes(key)) {
+          const valor = parseFloat(row[key]);
           datos.usuarios[legajo].calificaciones[mes][key] = isNaN(valor) ? 0 : valor;
         }
       }
@@ -104,19 +102,18 @@ Papa.parse("calificaciones.csv", {
 });
 
 function login() {
-  const usuario = document.getElementById("login-usuario").value.trim().toUpperCase();
-  const clave = document.getElementById("login-clave").value.trim();
-  const user = datos.usuarios[usuario];
+  const usuario = document.getElementById("login-usuario").value.trim();
+  const clave = document.getElementById("login-clave").value;
 
-  if (user && user.password === clave) {
+  if (datos.usuarios[usuario] && datos.usuarios[usuario].password === clave) {
     usuarioActual = usuario;
     document.getElementById("login-container").classList.add("hidden");
 
-    if (user.esAdmin) {
+    if (datos.usuarios[usuario].esAdmin) {
       document.getElementById("panel-admin").classList.remove("hidden");
     } else {
       document.getElementById("panel-bombero").classList.remove("hidden");
-      document.getElementById("nombre-usuario").textContent = user.nombre;
+      document.getElementById("nombre-usuario").textContent = datos.usuarios[usuario].nombre;
       mostrarCalificaciones(usuario);
     }
   } else {
@@ -134,11 +131,13 @@ function logout() {
 function mostrarCalificaciones(usuarioId) {
   const user = datos.usuarios[usuarioId];
   const calif = user.calificaciones || {};
-  const ordenMeses = [
-    "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
-    "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
-  ];
-  const meses = Object.keys(calif).sort((a, b) => ordenMeses.indexOf(a) - ordenMeses.indexOf(b));
+const ordenMeses = [
+  "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
+  "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
+];
+const meses = Object.keys(calif).sort((a, b) =>
+  ordenMeses.indexOf(a) - ordenMeses.indexOf(b)
+); 
   if (meses.length === 0) {
     document.getElementById("tabla-calificaciones").innerHTML = "<p>No hay calificaciones aún.</p>";
     return;
@@ -165,12 +164,14 @@ function renderCalificaciones(usuarioId, mesSeleccionado) {
   const user = datos.usuarios[usuarioId];
   const calif = user.calificaciones || {};
   const ordenMeses = [
-    "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
-    "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
-  ];
-  const meses = Object.keys(calif).sort((a, b) => ordenMeses.indexOf(a) - ordenMeses.indexOf(b));
+  "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
+  "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
+];
+const meses = Object.keys(calif).sort((a, b) =>
+  ordenMeses.indexOf(a) - ordenMeses.indexOf(b)
+);
 
-  const categorias = Object.keys(calif[meses[0]] || {}).filter(c => c !== "Porcentaje asistencias HT");
+  const categorias = Object.keys(calif[meses[0]] || {});
   if (!categorias.length) return;
 
   let html = "<table><thead><tr><th>Mes</th>";
@@ -179,7 +180,6 @@ function renderCalificaciones(usuarioId, mesSeleccionado) {
 
   const totales = Object.fromEntries(categorias.map(c => [c, 0]));
   const mesesAMostrar = mesSeleccionado === "ANUAL" ? meses : [mesSeleccionado];
-  const porcentajeBox = [];
 
   mesesAMostrar.forEach(mes => {
     html += `<tr><td>${mes}</td>`;
@@ -189,23 +189,16 @@ function renderCalificaciones(usuarioId, mesSeleccionado) {
       totales[cat] += val;
     });
     html += "</tr>";
-    if (calif[mes]["Porcentaje asistencias HT"] !== undefined) {
-      porcentajeBox.push(`${mes}: ${calif[mes]["Porcentaje asistencias HT"]}%`);
-    }
   });
 
   if (mesSeleccionado === "ANUAL" && meses.length > 1) {
     html += "<tr><th>Total Anual</th>";
-    categorias.forEach(cat => {
-      html += `<th>${totales[cat]}</th>`;
-    });
+    categorias.forEach(cat => html += `<th>${totales[cat]}</th>`);
     html += "</tr>";
   }
 
   html += "</tbody></table>";
   document.getElementById("tabla-meses").innerHTML = html;
-  document.getElementById("asistencias-box").innerHTML = porcentajeBox.length ?
-    `<h4>Porcentaje Asistencias HT</h4><p>${porcentajeBox.join("<br>")}</p>` : "";
 }
 </script>
 </body>
