@@ -92,6 +92,10 @@ function renderCalificaciones(mesSeleccionado) {
   }
 
   html += "</table>";
+  const tabla = document.getElementById("tablaCalificaciones");
+tabla.classList.remove("fade-refresh"); // reseteo por si ya estaba
+void tabla.offsetWidth; // hack para forzar reflow
+tabla.classList.add("fade-refresh");
   document.getElementById("tablaCalificaciones").innerHTML = html;
 }
 
