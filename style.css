@@ -171,5 +171,14 @@ button:hover {
   .fade-refresh {
   animation: fadeInUp 0.4s ease-out;
 }
-
+.porcentaje-box {
+  background-color: #2a2a2a;
+  border-left: 4px solid #ff4b4b;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  color: #ff4b4b;
+  animation: fadeInUp 0.5s ease;
+}
 }
