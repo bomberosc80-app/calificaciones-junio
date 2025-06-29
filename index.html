@@ -3,108 +3,163 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>App Calificaciones C80</title>
+  <title>Calificaciones Bomberos</title>
   <style>
     body {
       background-color: #121212;
+      color: #e0e0e0;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    input, select, button {
+      padding: 8px;
+      margin: 5px 0;
+      background-color: #1e1e1e;
       color: #fff;
-      font-family: sans-serif;
-      margin: 0;
-      padding: 0;
+      border: 1px solid #333;
+      border-radius: 4px;
     }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      padding: 2rem;
-    }
-    input, button, select {
+    table {
       width: 100%;
-      padding: 0.75rem;
-      margin: 0.5rem 0;
-      border-radius: 8px;
-      border: none;
-      font-size: 1rem;
+      border-collapse: collapse;
+      margin-top: 15px;
     }
-    button {
-      background-color: #1e88e5;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
+    th, td {
+      border: 1px solid #444;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #222;
     }
     .hidden {
       display: none;
     }
-    table {
-      width: 100%;
-      margin-top: 1rem;
-      border-collapse: collapse;
-    }
-    th, td {
-      border: 1px solid #444;
-      padding: 0.5rem;
-      text-align: center;
-    }
-    th {
-      background-color: #333;
-    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Calificaciones C80</h1>
+  <h1>Calificaciones Bomberos</h1>
 
-    <div id="login">
-      <input id="usuario" type="text" placeholder="Usuario">
-      <input id="clave" type="password" placeholder="Clave">
-      <button onclick="login()">Ingresar</button>
-      <div id="loginError" style="color: red; display: none;">Usuario o clave incorrecto</div>
-    </div>
-
-    <div id="panel" class="hidden">
-      <h2 id="nombreUsuario"></h2>
-      <select id="mesSeleccionado" onchange="renderCalificaciones(usuarioActivo, this.value)">
-        <option value="ANUAL">Resumen Anual</option>
-        <option value="ENERO">Enero</option>
-        <option value="FEBRERO">Febrero</option>
-        <option value="MARZO">Marzo</option>
-        <option value="ABRIL">Abril</option>
-        <option value="MAYO">Mayo</option>
-        <option value="JUNIO">Junio</option>
-        <option value="JULIO">Julio</option>
-        <option value="AGOSTO">Agosto</option>
-        <option value="SEPTIEMBRE">Septiembre</option>
-        <option value="OCTUBRE">Octubre</option>
-        <option value="NOVIEMBRE">Noviembre</option>
-        <option value="DICIEMBRE">Diciembre</option>
-      </select>
-      <div id="tablaCalificaciones"></div>
-    </div>
+  <div id="login">
+    <input type="text" id="usuario" placeholder="Usuario" />
+    <input type="password" id="clave" placeholder="Clave" />
+    <button onclick="iniciarSesion()">Ingresar</button>
   </div>
 
-  <script>
-    let datos = {
-      usuarios: {}
-    };
-    let usuarioActivo = null;
+  <div id="app" class="hidden">
+    <p>Bienvenido, <span id="nombreUsuario"></span></p>
 
-    function cargarCSV(url, callback) {
-      fetch(url)
-        .then(response => response.text())
-        .then(data => {
-          const lineas = data.trim().split("\n");
-          const encabezados = lineas[0].split(",");
-          for (let i = 1; i < lineas.length; i++) {
-            const valores = lineas[i].split(",");
-            const usuario = {};
-            for (let j = 0; j < encabezados.length; j++) {
-              usuario[encabezados[j].trim()] = valores[j].trim();
-            }
-            const id = usuario.usuario || usuario.id;
+    <label for="mes">Ver calificaciones de:</label>
+    <select id="mes" onchange="cambiarMes()">
+      <option value="ANUAL">Resumen Anual</option>
+      <option value="ENERO">Enero</option>
+      <option value="FEBRERO">Febrero</option>
+      <option value="MARZO">Marzo</option>
+      <option value="ABRIL">Abril</option>
+      <option value="MAYO">Mayo</option>
+      <option value="JUNIO">Junio</option>
+      <option value="JULIO">Julio</option>
+      <option value="AGOSTO">Agosto</option>
+      <option value="SEPTIEMBRE">Septiembre</option>
+      <option value="OCTUBRE">Octubre</option>
+      <option value="NOVIEMBRE">Noviembre</option>
+      <option value="DICIEMBRE">Diciembre</option>
+    </select>
+
+    <div id="tablaCalificaciones"></div>
+  </div>
+
+  <input type="file" id="csvFile" accept=".csv" onchange="cargarCSV(event)" />
+
+  <script>
+    let datos = { usuarios: {} };
+    let usuarioActual = null;
+
+    function cargarCSV(event) {
+      const archivo = event.target.files[0];
+      if (!archivo) return;
+
+      const lector = new FileReader();
+      lector.onload = function (e) {
+        const contenido = e.target.result;
+        const lineas = contenido.split("\n").filter(linea => linea.trim() !== "");
+        const encabezados = lineas[0].split(";").map(e => e.trim().toUpperCase());
+
+        for (let i = 1; i < lineas.length; i++) {
+          const valores = lineas[i].split(";");
+          if (valores.length < 2) continue;
+
+          const usuario = {};
+          for (let j = 0; j < encabezados.length; j++) {
+            usuario[encabezados[j]] = valores[j] ? valores[j].trim() : "";
+          }
+
+          delete usuario["__PARSED_EXTRA"];
+          const id = usuario["ID"];
+          if (id) {
             datos.usuarios[id] = usuario;
           }
-          if (callback) callback();
-        });
+        }
+
+        alert("Datos cargados correctamente.");
+      };
+      lector.readAsText(archivo);
     }
 
-    function login() {
-      const user = document.getElem
+    function iniciarSesion() {
+      const usuario = document.getElementById("usuario").value.trim();
+      const clave = document.getElementById("clave").value.trim();
+
+      const user = datos.usuarios[usuario];
+      if (user && user.CLAVE === clave) {
+        usuarioActual = usuario;
+        document.getElementById("login").classList.add("hidden");
+        document.getElementById("app").classList.remove("hidden");
+        document.getElementById("nombreUsuario").innerText = user.NOMBRE || usuario;
+        renderCalificaciones(usuario, "ANUAL");
+      } else {
+        alert("Usuario o clave incorrectos.");
+      }
+    }
+
+    function cambiarMes() {
+      const mes = document.getElementById("mes").value;
+      renderCalificaciones(usuarioActual, mes);
+    }
+
+    function renderCalificaciones(usuarioId, mesSeleccionado) {
+      const user = datos.usuarios[usuarioId];
+      const ordenMeses = [
+        "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
+        "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
+      ];
+
+      let html = "<table><tr><th>Mes</th><th>Calificación</th></tr>";
+      let total = 0;
+      let cantidad = 0;
+
+      if (mesSeleccionado === "ANUAL") {
+        for (const mes of ordenMeses) {
+          const valor = user[mes];
+          if (valor !== undefined && valor !== "" && !isNaN(valor)) {
+            html += `<tr><td>${mes}</td><td>${valor}</td></tr>`;
+            total += parseFloat(valor);
+            cantidad++;
+          } else if (valor !== undefined) {
+            html += `<tr><td>${mes}</td><td>${valor}</td></tr>`;
+          }
+        }
+
+        const promedio = cantidad > 0 ? (total / cantidad).toFixed(2) : "-";
+        html += `<tr style="font-weight:bold;"><td>PROMEDIO</td><td>${promedio}</td></tr>`;
+      } else {
+        const valor = user[mesSeleccionado] ?? "-";
+        html += `<tr><td>${mesSeleccionado}</td><td>${valor}</td></tr>`;
+      }
+
+      html += "</table>";
+      document.getElementById("tablaCalificaciones").innerHTML = html;
+    }
+  </script>
+</body>
+</html>
