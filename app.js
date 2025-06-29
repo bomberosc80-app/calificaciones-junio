@@ -75,10 +75,12 @@ function renderCalificaciones(mesSeleccionado) {
     const fila = calif[mes];
     if (!fila) continue;
     html += `<tr><td>${mes}</td>`;
-    for (let c of categorias) {
-      const val = parseFloat(fila[c] || 0);
-html += `<td>${val.toFixed(2)}</td>`;
-totales[c] += val; //
+  for (let c of categorias) {
+  const val = parseFloat(fila[c]) || 0;
+  html += `<td>${val.toFixed(2)}</td>`;
+  totales[c] += val;
+}
+
     }
     html += "</tr>";
   }
