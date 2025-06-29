@@ -135,4 +135,11 @@ button:hover {
   select {
     font-size: 1rem;
   }
+  .footer {
+  margin-top: 2rem;
+  font-size: 0.85rem;
+  color: #ff4b4b;
+  opacity: 0.6;
+  text-align: center;
+}
 }
