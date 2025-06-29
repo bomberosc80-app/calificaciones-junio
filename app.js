@@ -118,7 +118,7 @@ function previsualizarCSV() {
   lector.readAsText(archivo);
 }
 function mostrarPorcentajeHT(usuarioId) {
-  fetch('https://raw.githubusercontent.com/bomberosc80-app/calificaciones-c80/main/porcentajeht.csv')
+fetch('https://raw.githubusercontent.com/bomberosc80-app/calificaciones-junio/main/porcentajeht.csv')
     .then(res => res.text())
     .then(data => {
       const lineas = data.trim().split("\n").slice(1); // Omitir encabezado
