@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>App Calificaciones C80</title>
+  <title>Calificaciones C80</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -34,19 +35,16 @@
         <option value="NOVIEMBRE">Noviembre</option>
         <option value="DICIEMBRE">Diciembre</option>
       </select>
-      <button onclick="cerrarSesion()">Cerrar sesión</button>
+      <button onclick="cerrarSesion()">Cerrar Sesión</button>
       <div id="tablaCalificaciones"></div>
-
-      <div id="panelAdmin" class="hidden">
-        <h3>Panel Administrador - Cargar Calificaciones</h3>
-        <input type="file" id="archivoCSV" accept=".csv" />
+      <div id="adminPanel" class="hidden">
+        <h3>Panel de Administrador</h3>
+        <input type="file" id="csvInput" accept=".csv" />
         <button onclick="previsualizarCSV()">Previsualizar</button>
-        <button onclick="confirmarCarga()">Confirmar Carga</button>
-        <div id="previewCSV"></div>
+        <div id="preview"></div>
       </div>
     </div>
   </div>
-
   <script src="app.js"></script>
 </body>
 </html>

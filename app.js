@@ -1,33 +1,58 @@
+
 const datos = {
   usuarios: {
     "c80306": { CLAVE: "bvsp1959", NOMBRE: "Sergio" },
-    "juan23": { CLAVE: "1234", NOMBRE: "Juan Pérez" }
+    "juan23": { CLAVE: "1234", NOMBRE: "Juan Pérez" },
+    "admin": { CLAVE: "admin123", NOMBRE: "Administrador" }
   }
 };
 
 let usuarioActual = null;
 let calificaciones = [];
 
-async function iniciarSesion() {
+function iniciarSesion() {
   const usuario = document.getElementById("usuario").value.trim();
   const clave = document.getElementById("clave").value.trim();
-  const user = datos.usuarios[usuario];
 
+  const user = datos.usuarios[usuario];
   if (user && user.CLAVE === clave) {
     usuarioActual = usuario;
     document.getElementById("login").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
     document.getElementById("nombreUsuario").innerText = user.NOMBRE || usuario;
-    if (usuario === "c80306") document.getElementById("panelAdmin").classList.remove("hidden");
-    await cargarCalificaciones();
-    renderCalificaciones("ANUAL");
+
+    if (usuario === "admin") {
+      document.getElementById("adminPanel").classList.remove("hidden");
+    }
+
+    cargarCalificaciones();
   } else {
     alert("Usuario o clave incorrectos.");
   }
 }
 
 function cerrarSesion() {
-  location.reload();
+  usuarioActual = null;
+  document.getElementById("login").classList.remove("hidden");
+  document.getElementById("app").classList.add("hidden");
+  document.getElementById("adminPanel").classList.add("hidden");
+  document.getElementById("tablaCalificaciones").innerHTML = "";
+}
+
+function cargarCalificaciones() {
+  fetch("calificaciones.csv")
+    .then(res => res.text())
+    .then(data => {
+      const rows = data.trim().split("\n").map(row => row.split(","));
+      const headers = rows[0];
+      calificaciones = rows.slice(1).map(row => {
+        let obj = {};
+        headers.forEach((h, i) => obj[h.trim()] = row[i]?.trim());
+        return obj;
+      });
+      cambiarMes();
+    })
+    .catch(err => console.error("Error cargando CSV:", err));
 }
 
 function cambiarMes() {
@@ -36,92 +61,45 @@ function cambiarMes() {
 }
 
 function renderCalificaciones(mesSeleccionado) {
-  const tabla = document.getElementById("tablaCalificaciones");
-  const userData = calificaciones.find(row => row.legajo === usuarioActual);
-  if (!userData) return tabla.innerHTML = "<p>No hay datos disponibles.</p>";
+  let datosFiltrados = calificaciones.filter(c => c.mes === mesSeleccionado || mesSeleccionado === "ANUAL");
+  if (usuarioActual !== "admin") {
+    datosFiltrados = datosFiltrados.filter(c => c.legajo === usuarioActual.toUpperCase());
+  }
 
   let html = "<table><tr>";
-  if (mesSeleccionado === "ANUAL") {
-    html += "<th>Mes</th><th>Total</th></tr>";
-    const meses = ["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
-    let suma = 0, count = 0;
-    meses.forEach(mes => {
-      const rows = calificaciones.filter(r => r.legajo === usuarioActual && r.mes === mes);
-      if (rows.length > 0) {
-        const total = parseFloat(rows[0].TOTAL);
-        html += `<tr><td>${mes}</td><td>${total}</td></tr>`;
-        suma += total;
-        count++;
-      }
-    });
-    const promedio = count > 0 ? (suma / count).toFixed(2) : "-";
-    html += `<tr><th>Promedio</th><th>${promedio}</th></tr>`;
-  } else {
-    html += `<th>${mesSeleccionado}</th></tr>`;
-    const fila = calificaciones.find(r => r.legajo === usuarioActual && r.mes === mesSeleccionado);
-    html += `<tr><td>${fila ? fila.TOTAL : "Sin dato"}</td></tr>`;
-  }
-  html += "</table>";
-  tabla.innerHTML = html;
-}
+  const columnas = ["legajo", "nombre", "mes", "Ded.Interna", "Roperia", "Asist.Diaria", "O.Interno", "Instruccion", "AAccidental", "Guardia", "P.Neg", "P.Esp", "TOTAL"];
+  columnas.forEach(col => html += `<th>${col}</th>`);
+  html += "</tr>";
 
-async function cargarCalificaciones() {
-  try {
-    const response = await fetch("calificaciones.csv");
-    const texto = await response.text();
-    const lineas = texto.trim().split("\n");
-    const headers = lineas[0].split(",");
-    calificaciones = lineas.slice(1).map(linea => {
-      const datos = linea.split(",");
-      const fila = {};
-      headers.forEach((h, i) => fila[h.trim()] = datos[i]?.trim());
-      return fila;
-    });
-  } catch (e) {
-    console.error("Error al cargar CSV", e);
-  }
+  datosFiltrados.forEach(row => {
+    html += "<tr>";
+    columnas.forEach(col => html += `<td>${row[col] || ""}</td>`);
+    html += "</tr>";
+  });
+
+  html += "</table>";
+  document.getElementById("tablaCalificaciones").innerHTML = html;
 }
 
 function previsualizarCSV() {
-  const input = document.getElementById("archivoCSV");
-  const preview = document.getElementById("previewCSV");
-  if (!input.files.length) return;
+  const input = document.getElementById("csvInput");
+  const file = input.files[0];
+  if (!file) return alert("Selecciona un archivo CSV.");
 
   const reader = new FileReader();
   reader.onload = function (e) {
     const text = e.target.result;
-    const rows = text.trim().split("\n");
+    const rows = text.trim().split("\n").map(row => row.split(","));
     let html = "<table><tr>";
-    const headers = rows[0].split(",");
-    headers.forEach(h => html += `<th>${h}</th>`);
+    rows[0].forEach(col => html += `<th>${col}</th>`);
     html += "</tr>";
     rows.slice(1).forEach(row => {
       html += "<tr>";
-      row.split(",").forEach(cell => html += `<td>${cell}</td>`);
+      row.forEach(cell => html += `<td>${cell}</td>`);
       html += "</tr>";
     });
     html += "</table>";
-    preview.innerHTML = html;
+    document.getElementById("preview").innerHTML = html;
   };
-  reader.readAsText(input.files[0]);
-}
-
-function confirmarCarga() {
-  const input = document.getElementById("archivoCSV");
-  if (!input.files.length) return alert("Seleccione un archivo CSV");
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    const text = e.target.result;
-    const lineas = text.trim().split("\n");
-    const headers = lineas[0].split(",");
-    calificaciones = lineas.slice(1).map(linea => {
-      const datos = linea.split(",");
-      const fila = {};
-      headers.forEach((h, i) => fila[h.trim()] = datos[i]?.trim());
-      return fila;
-    });
-    alert("Calificaciones cargadas correctamente.");
-    renderCalificaciones(document.getElementById("selectorMes").value);
-  };
-  reader.readAsText(input.files[0]);
+  reader.readAsText(file);
 }
