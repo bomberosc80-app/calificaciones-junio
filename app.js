@@ -16,6 +16,7 @@ async function iniciarSesion() {
     usuarioActual = usuario;
     document.getElementById("login").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
+    document.getElementById("app").classList.add("fade-in");
     document.getElementById("nombreUsuario").innerText = user.NOMBRE || usuario;
     if (usuario === "admin") document.getElementById("panelAdmin").classList.remove("hidden");
     await cargarDatos();
