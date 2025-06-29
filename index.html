@@ -50,7 +50,7 @@ let usuarioActual = null;
 let datosCargados = false; // ✅ Nueva bandera para saber si ya están listos
 
 // 1. Cargar usuarios.csv
-Papa.parse("usuarios.csv", {
+Papa.parse("https://bomberosc80-app.github.io/calificaciones-junio/usuarios.csv", {
   download: true,
   header: true,
   skipEmptyLines: true,
@@ -70,7 +70,7 @@ Papa.parse("usuarios.csv", {
 });
 
 // 2. Cargar calificaciones.csv
-Papa.parse("calificaciones.csv", {
+Papa.parse("https://bomberosc80-app.github.io/calificaciones-junio/calificaciones.csv", {
   download: true,
   header: true,
   skipEmptyLines: true,
