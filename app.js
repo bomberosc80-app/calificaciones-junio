@@ -76,8 +76,8 @@ function renderCalificaciones(mesSeleccionado) {
     if (!fila) continue;
     html += `<tr><td>${mes}</td>`;
     for (let c of categorias) {
-      const val = fila[c] || 0;
-      html += `<td>${val}</td>`;
+      const val = (fila[c] || 0).toFixed(2);
+html += `<td>${val}</td>`;
       totales[c] += val;
     }
     html += "</tr>";
