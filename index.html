@@ -1,207 +1,110 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Calificaciones C80</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>App Calificaciones C80</title>
   <style>
-    body { background: #0d0d0d; color: #ff4c4c; font-family: 'Segoe UI', sans-serif; padding: 20px; margin: 0; }
-    h2, h3, h4 { color: #ff4c4c; }
-    input, button, select { padding:10px; margin:5px 0; border:none; border-radius:6px; font-size:1em; width:100%; box-sizing:border-box; }
-    input, select { background:#222; color:#eee; }
-    button { background:#ff4c4c; color:#fff; cursor:pointer; transition:background .3s ease; }
-    button:hover { background:#cc0000; }
-    .hidden { display:none; }
-    table { width:100%; border-collapse:collapse; margin-top:10px; background:#1a1a1a; }
-    th, td { border:1px solid #333; padding:8px; text-align:center; }
-    th { background:#222; }
-    tr:hover { background:#2a2a2a; }
-    #login-container, #panel-bombero, #panel-admin { max-width:600px; margin:auto; }
-    hr { border:1px solid #444; margin:20px 0; }
+    body {
+      background-color: #121212;
+      color: #fff;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 2rem;
+    }
+    input, button, select {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #1e88e5;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .hidden {
+      display: none;
+    }
+    table {
+      width: 100%;
+      margin-top: 1rem;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 0.5rem;
+      text-align: center;
+    }
+    th {
+      background-color: #333;
+    }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Calificaciones C80</h1>
 
-<div id="login-container">
-  <img src="cuartel.jpg" alt="Cuartel de Bomberos" style="width:100%; border-radius:12px; margin-bottom:10px;">
-  <h2>Ingreso</h2>
-  <input type="text" id="login-usuario" placeholder="Legajo"><br>
-  <input type="password" id="login-clave" placeholder="Clave"><br>
-  <button onclick="login()">Entrar</button>
-</div>
+    <div id="login">
+      <input id="usuario" type="text" placeholder="Usuario">
+      <input id="clave" type="password" placeholder="Clave">
+      <button onclick="login()">Ingresar</button>
+      <div id="loginError" style="color: red; display: none;">Usuario o clave incorrecto</div>
+    </div>
 
-<div id="panel-bombero" class="hidden">
-  <h2>Bienvenido <span id="nombre-usuario"></span></h2>
-  <div id="tabla-calificaciones"></div>
-  <div id="tabla-meses"></div>
-  <br><button onclick="logout()">Salir</button>
-</div>
+    <div id="panel" class="hidden">
+      <h2 id="nombreUsuario"></h2>
+      <select id="mesSeleccionado" onchange="renderCalificaciones(usuarioActivo, this.value)">
+        <option value="ANUAL">Resumen Anual</option>
+        <option value="ENERO">Enero</option>
+        <option value="FEBRERO">Febrero</option>
+        <option value="MARZO">Marzo</option>
+        <option value="ABRIL">Abril</option>
+        <option value="MAYO">Mayo</option>
+        <option value="JUNIO">Junio</option>
+        <option value="JULIO">Julio</option>
+        <option value="AGOSTO">Agosto</option>
+        <option value="SEPTIEMBRE">Septiembre</option>
+        <option value="OCTUBRE">Octubre</option>
+        <option value="NOVIEMBRE">Noviembre</option>
+        <option value="DICIEMBRE">Diciembre</option>
+      </select>
+      <div id="tablaCalificaciones"></div>
+    </div>
+  </div>
 
-<div id="panel-admin" class="hidden">
-  <h2>Panel de administración</h2>
-  <p>Bienvenido, administrador.</p>
-  <button onclick="logout()">Salir</button>
-</div>
+  <script>
+    let datos = {
+      usuarios: {}
+    };
+    let usuarioActivo = null;
 
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
-<script>
-let datos = { usuarios: {} };
-let usuarioActual = null;
-let datosCargados = false; // ✅ Nueva bandera para saber si ya están listos
-
-// 1. Cargar usuarios directamente
-datos.usuarios = {
-  "c80306": {
-    password: "bvsp1959",
-    nombre: "Carlos",
-    esAdmin: false,
-    calificaciones: {}
-  }
-};
-
-datosCargados = true;
-
-// 2. Cargar calificaciones.csv
-Papa.parse("https://bomberosc80-app.github.io/calificaciones-junio/calificaciones.csv", {
-  download: true,
-  header: true,
-  skipEmptyLines: true,
-  complete: function(results) {
-    results.data.forEach(row => {
-      const legajo = row.legajo?.trim();
-      const mes = row.mes?.trim().toUpperCase();
-      if (!legajo || !mes) return;
-
-      if (!datos.usuarios[legajo]) {
-        datos.usuarios[legajo] = {
-          password: legajo,
-          nombre: legajo,
-          esAdmin: false,
-          calificaciones: {}
-        };
-      }
-
-      if (!datos.usuarios[legajo].calificaciones[mes]) {
-        datos.usuarios[legajo].calificaciones[mes] = {};
-      }
-
-      for (const key in row) {
-        if (!["legajo", "nombre", "mes"].includes(key)) {
-          const valor = parseFloat(row[key]);
-          datos.usuarios[legajo].calificaciones[mes][key] = isNaN(valor) ? 0 : valor;
-        }
-      }
-    });
-  }
-});
-
-function login() {
-  if (!datosCargados) {
-    alert("Todavía se están cargando los datos. Esperá un segundo e intentá de nuevo.");
-    return;
-  }
-
-  const usuario = document.getElementById("login-usuario").value.trim();
-  const clave = document.getElementById("login-clave").value;
-
-  if (datos.usuarios[usuario] && datos.usuarios[usuario].password === clave) {
-    usuarioActual = usuario;
-    document.getElementById("login-container").classList.add("hidden");
-
-    if (datos.usuarios[usuario].esAdmin) {
-      document.getElementById("panel-admin").classList.remove("hidden");
-    } else {
-      document.getElementById("panel-bombero").classList.remove("hidden");
-      document.getElementById("nombre-usuario").textContent = datos.usuarios[usuario].nombre;
-      mostrarCalificaciones(usuario);
+    function cargarCSV(url, callback) {
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          const lineas = data.trim().split("\n");
+          const encabezados = lineas[0].split(",");
+          for (let i = 1; i < lineas.length; i++) {
+            const valores = lineas[i].split(",");
+            const usuario = {};
+            for (let j = 0; j < encabezados.length; j++) {
+              usuario[encabezados[j].trim()] = valores[j].trim();
+            }
+            const id = usuario.usuario || usuario.id;
+            datos.usuarios[id] = usuario;
+          }
+          if (callback) callback();
+        });
     }
-  } else {
-    alert("Usuario o clave incorrecta");
-  }
-}
 
-function logout() {
-  usuarioActual = null;
-  document.getElementById("panel-admin").classList.add("hidden");
-  document.getElementById("panel-bombero").classList.add("hidden");
-  document.getElementById("login-container").classList.remove("hidden");
-}
-
-function mostrarCalificaciones(usuarioId) {
-  const user = datos.usuarios[usuarioId];
-  const calif = user.calificaciones || {};
-  const ordenMeses = [
-    "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
-    "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
-  ];
-  const meses = Object.keys(calif).sort((a, b) =>
-    ordenMeses.indexOf(a) - ordenMeses.indexOf(b)
-  ); 
-  if (meses.length === 0) {
-    document.getElementById("tabla-calificaciones").innerHTML = "<p>No hay calificaciones aún.</p>";
-    return;
-  }
-
-  let html = `<label for="select-mes">Ver calificaciones de: </label>
-    <select id="select-mes">
-      <option value="ANUAL">Resumen Anual</option>`;
-  meses.forEach(mes => {
-    html += `<option value="${mes}">${mes}</option>`;
-  });
-  html += `</select><br><br>`;
-  document.getElementById("tabla-calificaciones").innerHTML = html;
-
-  const selector = document.getElementById("select-mes");
-  selector.addEventListener("change", () => {
-    renderCalificaciones(usuarioId, selector.value);
-  });
-
-  renderCalificaciones(usuarioId, "ANUAL");
-}
-
-function renderCalificaciones(usuarioId, mesSeleccionado) {
-  const user = datos.usuarios[usuarioId];
-  const calif = user.calificaciones || {};
-
-  const ordenMeses = [
-    "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
-    "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
-  ];
-
-  const meses = Object.keys(calif).sort((a, b) => ordenMeses.indexOf(a) - ordenMeses.indexOf(b));
-
-  // Recolectar todas las categorías presentes en todos los meses (evitar vacíos)
-  let categoriasSet = new Set();
-  meses.forEach(m => {
-    Object.keys(calif[m] || {}).forEach(c => {
-      if (c && c.trim()) categoriasSet.add(c);
-    });
-  });
-  const categorias = Array.from(categoriasSet);
-
-  // Construir encabezado
-  let html = "<table><thead><tr><th>Mes</th>";
-  categorias.forEach(cat => {
-    html += `<th>${cat}</th>`;
-  });
-  html += "</tr></thead><tbody>";
-
-  // Construir filas de datos
-  meses.forEach(mes => {
-    if (mesSeleccionado !== "ANUAL" && mes !== mesSeleccionado) return;
-    html += `<tr><td>${mes}</td>`;
-    categorias.forEach(cat => {
-      const valor = calif[mes]?.[cat] ?? "";
-      html += `<td>${valor}</td>`;
-    });
-    html += "</tr>";
-  });
-
-  html += "</tbody></table>";
-
-  document.getElementById("tabla-calificaciones").innerHTML = html;
-}
-
-</script>
-</body>
-</html>
+    function login() {
+      const user = document.getElem
