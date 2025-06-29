@@ -2,171 +2,220 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>App Calificaciones C80</title>
   <style>
-    body { font-family: sans-serif; background: #121212; color: #fff; margin: 0; padding: 20px; }
+    body {
+      background-color: #121212;
+      color: red;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
     .hidden { display: none; }
-    input, select, button { margin: 5px 0; padding: 10px; border-radius: 5px; border: none; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { padding: 10px; border: 1px solid #444; text-align: center; }
-    th { background-color: #333; }
     .container { max-width: 800px; margin: auto; }
-    .admin-panel { background: #1e1e1e; padding: 15px; margin-top: 20px; border-radius: 10px; }
+    input, select, button {
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      margin: 5px 0;
+    }
+    button { background: #333; color: red; cursor: pointer; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 10px;
+      text-align: center;
+    }
+    th { background-color: #222; }
+    .admin-panel { border: 1px solid red; padding: 10px; margin-top: 20px; }
   </style>
 </head>
 <body>
-<div class="container">
-  <h2>Calificaciones C80</h2>
+  <div class="container">
+    <h2>Calificaciones C80</h2>
 
-  <div id="login">
-    <p><strong>Iniciar Sesión</strong></p>
-    <input type="text" id="usuario" placeholder="ID" />
-    <input type="password" id="clave" placeholder="Clave" />
-    <button onclick="iniciarSesion()">Ingresar</button>
+    <div id="login">
+      <p><strong>Iniciar Sesión</strong></p>
+      <input type="text" id="usuario" placeholder="ID" />
+      <input type="password" id="clave" placeholder="Clave" />
+      <button onclick="iniciarSesion()">Ingresar</button>
+    </div>
+
+    <div id="app" class="hidden">
+      <p>Bienvenido/a: <strong id="nombreUsuario"></strong></p>
+      <select id="selectorMes" onchange="cambiarMes()">
+        <option value="ANUAL">Resumen Anual</option>
+        <option value="ENERO">Enero</option>
+        <option value="FEBRERO">Febrero</option>
+        <option value="MARZO">Marzo</option>
+        <option value="ABRIL">Abril</option>
+        <option value="MAYO">Mayo</option>
+        <option value="JUNIO">Junio</option>
+        <option value="JULIO">Julio</option>
+        <option value="AGOSTO">Agosto</option>
+        <option value="SEPTIEMBRE">Septiembre</option>
+        <option value="OCTUBRE">Octubre</option>
+        <option value="NOVIEMBRE">Noviembre</option>
+        <option value="DICIEMBRE">Diciembre</option>
+      </select>
+      <button onclick="cerrarSesion()">Cerrar sesión</button>
+      <div id="tablaCalificaciones"></div>
+
+      <div id="adminPanel" class="admin-panel hidden">
+        <h3>Panel del Administrador</h3>
+        <input type="file" id="csvFile" accept=".csv" />
+        <button onclick="previsualizarCSV()">Previsualizar</button>
+        <div id="preview"></div>
+        <button onclick="confirmarCarga()">Cargar Calificaciones</button>
+      </div>
+    </div>
   </div>
 
-  <div id="app" class="hidden">
-    <p>Bienvenido/a: <strong id="nombreUsuario"></strong></p>
-    <select id="selectorMes" onchange="cambiarMes()">
-      <option value="ANUAL">Resumen Anual</option>
-      <option value="ENERO">Enero</option>
-      <option value="FEBRERO">Febrero</option>
-      <option value="MARZO">Marzo</option>
-      <option value="ABRIL">Abril</option>
-      <option value="MAYO">Mayo</option>
-      <option value="JUNIO">Junio</option>
-      <option value="JULIO">Julio</option>
-      <option value="AGOSTO">Agosto</option>
-      <option value="SEPTIEMBRE">Septiembre</option>
-      <option value="OCTUBRE">Octubre</option>
-      <option value="NOVIEMBRE">Noviembre</option>
-      <option value="DICIEMBRE">Diciembre</option>
-    </select>
-    <div id="tablaCalificaciones"></div>
-  </div>
+  <script>
+    const datos = {
+      usuarios: {
+        "c80306": { CLAVE: "bvsp1959", NOMBRE: "Sergio" },
+        "admin": { CLAVE: "admin123", NOMBRE: "Administrador" },
+        "juan23": { CLAVE: "1234", NOMBRE: "Juan Pérez" }
+      }
+    };
 
-  <div id="adminPanel" class="admin-panel hidden">
-    <h3>Panel del Administrador</h3>
-    <input type="file" accept=".csv" onchange="previsualizarCSV(event)" />
-    <div id="previewCSV"></div>
-    <button onclick="confirmarCargaCSV()">Cargar Calificaciones</button>
-  </div>
-</div>
+    let usuarioActual = null;
+    let calificaciones = {}; // Se cargan desde CSV
 
-<script>
-const datos = {
-  usuarios: {
-    "c80306": {
-      CLAVE: "bvsp1959",
-      NOMBRE: "Sergio"
-    },
-    "juan23": {
-      CLAVE: "1234",
-      NOMBRE: "Juan Pérez"
-    },
-    "admin": {
-      CLAVE: "admin123",
-      NOMBRE: "Administrador"
-    }
-  }
-};
-
-let usuarioActual = null;
-let datosCalificaciones = {}; // Calificaciones separadas, se cargan desde CSV
-
-function iniciarSesion() {
-  const usuario = document.getElementById("usuario").value.trim();
-  const clave = document.getElementById("clave").value.trim();
-  const user = datos.usuarios[usuario];
-
-  if (user && user.CLAVE === clave) {
-    usuarioActual = usuario;
-    document.getElementById("login").classList.add("hidden");
-    document.getElementById("app").classList.remove("hidden");
-    document.getElementById("nombreUsuario").innerText = user.NOMBRE || usuario;
-    if (usuario === "admin") {
-      document.getElementById("adminPanel").classList.remove("hidden");
-    }
-    renderCalificaciones(usuario, "ANUAL");
-  } else {
-    alert("Usuario o clave incorrectos.");
-  }
-}
-
-function cambiarMes() {
-  const mes = document.getElementById("selectorMes").value;
-  renderCalificaciones(usuarioActual, mes);
-}
-
-function renderCalificaciones(usuarioId, mesSeleccionado) {
-  const user = datos.usuarios[usuarioId];
-  const calif = datosCalificaciones[usuarioId] || {};
-  const ordenMeses = [
-    "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
-    "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
-  ];
-
-  let html = "<table><tr>";
-  if (mesSeleccionado === "ANUAL") {
-    html += "<th>Mes</th><th>Calificación</th></tr>";
-    let suma = 0, cantidad = 0;
-    for (let mes of ordenMeses) {
-      const valor = calif[mes];
-      if (valor !== undefined && valor !== "") {
-        html += `<tr><td>${mes}</td><td>${valor}</td></tr>`;
-        suma += parseFloat(valor);
-        cantidad++;
+    function iniciarSesion() {
+      const usuario = document.getElementById("usuario").value.trim();
+      const clave = document.getElementById("clave").value.trim();
+      const user = datos.usuarios[usuario];
+      if (user && user.CLAVE === clave) {
+        usuarioActual = usuario;
+        document.getElementById("login").classList.add("hidden");
+        document.getElementById("app").classList.remove("hidden");
+        document.getElementById("nombreUsuario").innerText = user.NOMBRE;
+        if (usuario === "admin") {
+          document.getElementById("adminPanel").classList.remove("hidden");
+        }
+        cargarCSVDesdeGitHub();
+      } else {
+        alert("Usuario o clave incorrectos.");
       }
     }
-    const promedio = cantidad > 0 ? (suma / cantidad).toFixed(2) : "-";
-    html += `<tr><th>Promedio</th><th>${promedio}</th></tr>`;
-  } else {
-    html += `<th>${mesSeleccionado}</th></tr>`;
-    html += `<tr><td>${calif[mesSeleccionado] || "Sin dato"}</td></tr>`;
-  }
-  html += "</table>";
-  document.getElementById("tablaCalificaciones").innerHTML = html;
-}
 
-function previsualizarCSV(event) {
-  const archivo = event.target.files[0];
-  if (!archivo) return;
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    const contenido = e.target.result;
-    const filas = contenido.split(/\r?\n/).map(f => f.split(","));
-    let html = "<table><tr>" + filas[0].map(c => `<th>${c}</th>`).join("") + "</tr>";
-    for (let i = 1; i < filas.length; i++) {
-      if (filas[i].length > 1) {
-        html += "<tr>" + filas[i].map(c => `<td>${c}</td>`).join("") + "</tr>";
+    function cerrarSesion() {
+      location.reload();
+    }
+
+    function cambiarMes() {
+      const mes = document.getElementById("selectorMes").value;
+      renderCalificaciones(usuarioActual, mes);
+    }
+
+    function renderCalificaciones(usuarioId, mesSeleccionado) {
+      const userData = calificaciones[usuarioId];
+      if (!userData) {
+        document.getElementById("tablaCalificaciones").innerHTML = "<p>No hay calificaciones cargadas.</p>";
+        return;
       }
-    }
-    html += "</table>";
-    document.getElementById("previewCSV").innerHTML = html;
-    window.datosCSVTemporal = filas;
-  };
-  reader.readAsText(archivo);
-}
 
-function confirmarCargaCSV() {
-  const filas = window.datosCSVTemporal;
-  if (!filas || filas.length < 2) return alert("No hay datos para cargar");
-  const cabeceras = filas[0];
-  for (let i = 1; i < filas.length; i++) {
-    const fila = filas[i];
-    const id = fila[0];
-    if (!id) continue;
-    datosCalificaciones[id] = {};
-    for (let j = 1; j < cabeceras.length; j++) {
-      datosCalificaciones[id][cabeceras[j]] = fila[j];
+      const meses = ["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO",
+                     "JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
+
+      let html = "<table><tr>";
+      if (mesSeleccionado === "ANUAL") {
+        html += "<th>Mes</th><th>Calificación</th></tr>";
+        let suma = 0, count = 0;
+        for (let mes of meses) {
+          const nota = userData[mes];
+          if (nota) {
+            html += `<tr><td>${mes}</td><td>${nota}</td></tr>`;
+            suma += parseFloat(nota);
+            count++;
+          }
+        }
+        const promedio = count > 0 ? (suma / count).toFixed(2) : "-";
+        html += `<tr><th>Promedio</th><th>${promedio}</th></tr>`;
+      } else {
+        html += `<th>${mesSeleccionado}</th></tr>`;
+        html += `<tr><td>${userData[mesSeleccionado] || "Sin dato"}</td></tr>`;
+      }
+
+      html += "</table>";
+      document.getElementById("tablaCalificaciones").innerHTML = html;
     }
-  }
-  alert("Calificaciones cargadas correctamente.");
-  if (usuarioActual && usuarioActual !== "admin") {
-    renderCalificaciones(usuarioActual, document.getElementById("selectorMes").value);
-  }
-}
-</script>
+
+    function cargarCSVDesdeGitHub() {
+      fetch("calificaciones.csv")
+        .then(res => res.text())
+        .then(text => {
+          const lines = text.trim().split("\n");
+          const headers = lines[0].split(",");
+          calificaciones = {};
+          for (let i = 1; i < lines.length; i++) {
+            const cols = lines[i].split(",");
+            const id = cols[0];
+            calificaciones[id] = {};
+            for (let j = 1; j < headers.length; j++) {
+              calificaciones[id][headers[j].trim()] = cols[j]?.trim();
+            }
+          }
+          cambiarMes(); // Actualiza vista tras carga
+        })
+        .catch(err => {
+          console.error("Error al cargar CSV desde GitHub:", err);
+        });
+    }
+
+    // ADMIN: Previsualización y carga desde archivo local
+    function previsualizarCSV() {
+      const file = document.getElementById("csvFile").files[0];
+      if (!file) return alert("Seleccioná un archivo CSV");
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const text = e.target.result;
+        const lines = text.trim().split("\n");
+        const headers = lines[0].split(",");
+        let html = "<table><tr>";
+        for (let h of headers) html += `<th>${h}</th>`;
+        html += "</tr>";
+
+        for (let i = 1; i < lines.length; i++) {
+          const cols = lines[i].split(",");
+          html += "<tr>";
+          for (let col of cols) html += `<td>${col}</td>`;
+          html += "</tr>";
+        }
+
+        html += "</table>";
+        document.getElementById("preview").innerHTML = html;
+        // Guarda temporalmente el CSV cargado
+        document.getElementById("csvFile").tempContent = text;
+      };
+      reader.readAsText(file);
+    }
+
+    function confirmarCarga() {
+      const text = document.getElementById("csvFile").tempContent;
+      if (!text) return alert("Primero previsualizá el archivo.");
+      const lines = text.trim().split("\n");
+      const headers = lines[0].split(",");
+      calificaciones = {};
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(",");
+        const id = cols[0];
+        calificaciones[id] = {};
+        for (let j = 1; j < headers.length; j++) {
+          calificaciones[id][headers[j].trim()] = cols[j]?.trim();
+        }
+      }
+      alert("Calificaciones cargadas correctamente.");
+      cambiarMes();
+    }
+  </script>
 </body>
 </html>
