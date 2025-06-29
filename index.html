@@ -47,6 +47,7 @@
 <script>
 let datos = { usuarios: {} };
 let usuarioActual = null;
+let datosCargados = false; // ✅ Nueva bandera para saber si ya están listos
 
 // 1. Cargar usuarios.csv
 Papa.parse("usuarios.csv", {
@@ -64,6 +65,7 @@ Papa.parse("usuarios.csv", {
         calificaciones: {}
       };
     });
+    datosCargados = true; // ✅ Ya se puede loguear
   }
 });
 
@@ -102,6 +104,11 @@ Papa.parse("calificaciones.csv", {
 });
 
 function login() {
+  if (!datosCargados) {
+    alert("Todavía se están cargando los datos. Esperá un segundo e intentá de nuevo.");
+    return;
+  }
+
   const usuario = document.getElementById("login-usuario").value.trim();
   const clave = document.getElementById("login-clave").value;
 
@@ -131,13 +138,13 @@ function logout() {
 function mostrarCalificaciones(usuarioId) {
   const user = datos.usuarios[usuarioId];
   const calif = user.calificaciones || {};
-const ordenMeses = [
-  "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
-  "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
-];
-const meses = Object.keys(calif).sort((a, b) =>
-  ordenMeses.indexOf(a) - ordenMeses.indexOf(b)
-); 
+  const ordenMeses = [
+    "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
+    "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
+  ];
+  const meses = Object.keys(calif).sort((a, b) =>
+    ordenMeses.indexOf(a) - ordenMeses.indexOf(b)
+  ); 
   if (meses.length === 0) {
     document.getElementById("tabla-calificaciones").innerHTML = "<p>No hay calificaciones aún.</p>";
     return;
@@ -164,12 +171,12 @@ function renderCalificaciones(usuarioId, mesSeleccionado) {
   const user = datos.usuarios[usuarioId];
   const calif = user.calificaciones || {};
   const ordenMeses = [
-  "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
-  "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
-];
-const meses = Object.keys(calif).sort((a, b) =>
-  ordenMeses.indexOf(a) - ordenMeses.indexOf(b)
-);
+    "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
+    "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
+  ];
+  const meses = Object.keys(calif).sort((a, b) =>
+    ordenMeses.indexOf(a) - ordenMeses.indexOf(b)
+  );
 
   const categorias = Object.keys(calif[meses[0]] || {});
   if (!categorias.length) return;
