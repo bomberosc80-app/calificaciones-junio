@@ -62,6 +62,7 @@ select {
   border: none;
   background-color: #2a2a2a;
   color: #ff4b4b;
+  font-size: 16px;
 }
 
 button {
