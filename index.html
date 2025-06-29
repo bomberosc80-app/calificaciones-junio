@@ -2,38 +2,67 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>App Calificaciones C80</title>
   <style>
-    body { font-family: sans-serif; background: #121212; color: #fff; margin: 0; padding: 20px; }
-    .hidden { display: none; }
-    input, select, button { margin: 5px 0; padding: 10px; border-radius: 5px; border: none; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { padding: 10px; border: 1px solid #444; text-align: center; }
-    th { background-color: #333; }
-    .container { max-width: 600px; margin: auto; }
+    body {
+      background-color: #121212;
+      color: #fff;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 2rem;
+    }
+    input, button, select {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #1e88e5;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .hidden {
+      display: none;
+    }
+    table {
+      width: 100%;
+      margin-top: 1rem;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 0.5rem;
+      text-align: center;
+    }
+    th {
+      background-color: #333;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Calificaciones C80</h2>
+    <h1>Calificaciones C80</h1>
 
-    <div id="cargaCSV">
-      <p><strong>1. Cargar archivo CSV</strong></p>
-      <input type="file" id="archivoCSV" accept=".csv" />
-      <button onclick="cargarCSV()">Cargar</button>
+    <div id="login">
+      <input id="usuario" type="text" placeholder="Usuario">
+      <input id="clave" type="password" placeholder="Clave">
+      <button onclick="login()">Ingresar</button>
+      <div id="loginError" style="color: red; display: none;">Usuario o clave incorrecto</div>
     </div>
 
-    <div id="login" class="hidden">
-      <p><strong>2. Iniciar Sesión</strong></p>
-      <input type="text" id="usuario" placeholder="ID" />
-      <input type="password" id="clave" placeholder="Clave" />
-      <button onclick="iniciarSesion()">Ingresar</button>
-    </div>
-
-    <div id="app" class="hidden">
-      <p>Bienvenido/a: <strong id="nombreUsuario"></strong></p>
-      <select id="selectorMes" onchange="cambiarMes()">
+    <div id="panel" class="hidden">
+      <h2 id="nombreUsuario"></h2>
+      <select id="mesSeleccionado" onchange="renderCalificaciones(usuarioActivo, this.value)">
         <option value="ANUAL">Resumen Anual</option>
         <option value="ENERO">Enero</option>
         <option value="FEBRERO">Febrero</option>
@@ -53,93 +82,72 @@
   </div>
 
   <script>
-    let datos = { usuarios: {} };
-    let usuarioActual = null;
+    let datos = {
+      usuarios: {}
+    };
+    let usuarioActivo = null;
 
-    function cargarCSV() {
-      const archivo = document.getElementById("archivoCSV").files[0];
-      if (!archivo) return alert("Seleccioná un archivo CSV.");
-
-      const lector = new FileReader();
-      lector.onload = function (e) {
-        const texto = e.target.result;
-        const lineas = texto.trim().split("\n");
-        const encabezados = lineas[0].split(";").map(h => h.trim());
-        
-        for (let i = 1; i < lineas.length; i++) {
-          const fila = lineas[i].split(";").map(c => c.trim());
-          const usuario = {};
-          for (let j = 0; j < encabezados.length; j++) {
-            usuario[encabezados[j]] = fila[j];
-          }
-
-          const id = usuario.ID;
-          if (id) {
-            delete usuario["__parsed_extra"]; // eliminar campo innecesario
+    function cargarCSV(url, callback) {
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          const lineas = data.trim().split("\n");
+          const encabezados = lineas[0].split(",");
+          for (let i = 1; i < lineas.length; i++) {
+            const valores = lineas[i].split(",");
+            const usuario = {};
+            for (let j = 0; j < encabezados.length; j++) {
+              usuario[encabezados[j].trim()] = valores[j].trim();
+            }
+            const id = usuario.usuario || usuario.id;
             datos.usuarios[id] = usuario;
           }
-        }
-
-        alert("Datos cargados correctamente.");
-        document.getElementById("login").classList.remove("hidden");
-      };
-      lector.readAsText(archivo);
+          if (callback) callback();
+        });
     }
 
-    function iniciarSesion() {
-      const usuario = document.getElementById("usuario").value.trim();
-      const clave = document.getElementById("clave").value.trim();
+    function login() {
+      const user = document.getElementById("usuario").value.trim();
+      const pass = document.getElementById("clave").value.trim();
+      const usuario = datos.usuarios[user];
 
-      const user = datos.usuarios[usuario];
-      if (user && user.CLAVE === clave) {
-        usuarioActual = usuario;
+      if (usuario && usuario.clave === pass) {
+        usuarioActivo = user;
         document.getElementById("login").classList.add("hidden");
-        document.getElementById("app").classList.remove("hidden");
-        document.getElementById("nombreUsuario").innerText = user.NOMBRE || usuario;
-        renderCalificaciones(usuario, "ANUAL");
+        document.getElementById("panel").classList.remove("hidden");
+        document.getElementById("nombreUsuario").textContent = "Bienvenido: " + usuario.nombre;
+        renderCalificaciones(user, "ANUAL");
       } else {
-        alert("Usuario o clave incorrectos.");
+        document.getElementById("loginError").style.display = "block";
       }
-    }
-
-    function cambiarMes() {
-      const mes = document.getElementById("selectorMes").value;
-      renderCalificaciones(usuarioActual, mes);
     }
 
     function renderCalificaciones(usuarioId, mesSeleccionado) {
       const user = datos.usuarios[usuarioId];
-      const calif = user;
+      const calif = user.calificaciones || {};
       const ordenMeses = [
         "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
         "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
       ];
 
-      let html = "<table><tr>";
+      let html = "<table><tr><th>Mes</th><th>Calificación</th></tr>";
+
       if (mesSeleccionado === "ANUAL") {
-        html += "<th>Mes</th><th>Calificación</th></tr>";
-        let suma = 0;
-        let cantidad = 0;
-
-        for (let mes of ordenMeses) {
-          const valor = calif[mes];
-          if (valor) {
-            html += `<tr><td>${mes}</td><td>${valor}</td></tr>`;
-            suma += parseFloat(valor);
-            cantidad++;
-          }
+        for (const mes of ordenMeses) {
+          const valor = user[mes] || "-";
+          html += `<tr><td>${mes}</td><td>${valor}</td></tr>`;
         }
-
-        const promedio = cantidad > 0 ? (suma / cantidad).toFixed(2) : "-";
-        html += `<tr><th>Promedio</th><th>${promedio}</th></tr>`;
       } else {
-        html += `<th>${mesSeleccionado}</th></tr>`;
-        html += `<tr><td>${calif[mesSeleccionado] || "Sin dato"}</td></tr>`;
+        const valor = user[mesSeleccionado] || "-";
+        html += `<tr><td>${mesSeleccionado}</td><td>${valor}</td></tr>`;
       }
 
       html += "</table>";
       document.getElementById("tablaCalificaciones").innerHTML = html;
     }
+
+    // Carga inicial
+    cargarCSV("usuarios.csv");
   </script>
 </body>
 </html>
