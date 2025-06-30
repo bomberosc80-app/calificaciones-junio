@@ -99,14 +99,16 @@ button:hover {
 
 /* Tabla y panel admin */
 #tablaCalificaciones {
-  margin-bottom: 100px; /* espacio para la firma */
-  position: relative;
-  z-index: 1;
+  overflow-x: auto;
+  max-width: 100%;
+  margin-top: 20px;
+  border-radius: 12px;
 }
 
 #tablaCalificaciones table {
   width: 100%;
-  min-width: 600px; /* Hace scroll horizontal si es más grande que el viewport */
+  border-collapse: collapse;
+  min-width: 800px;
 }
 
 #panelAdmin {
@@ -221,5 +223,47 @@ margin-top: 30px;
   z-index: 2;
   position: relative;
 }
+/* Zebra striping */
+#tablaCalificaciones tr:nth-child(even) {
+  background-color: #1e1e1e;
+}
 
+#tablaCalificaciones th,
+#tablaCalificaciones td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #444;
+  color: #f55;
+}
+
+/* Estilo cabecera */
+#tablaCalificaciones th {
+  background-color: #222;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* Columna "Mes" fija */
+#tablaCalificaciones td:first-child,
+#tablaCalificaciones th:first-child {
+  position: sticky;
+  left: 0;
+  background-color: #111;
+  z-index: 3;
+  text-align: left;
+  font-weight: bold;
+}
+
+/* Total anual destacado */
+.admin-total {
+  background-color: #333;
+  font-weight: bold;
+}
+
+/* Scroll dentro de la tabla */
+#tablaCalificaciones {
+  overflow-x: auto;
+  max-height: 400px;
+}
 }
