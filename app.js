@@ -65,7 +65,13 @@ async function cargarDatos() {
 function renderCalificaciones(mesSeleccionado) {
   const calif = datos[usuarioActual]?.calificaciones || {};
   const categorias = ["Ded.Interna", "Roperia", "Asist.Diaria", "O.Interno", "Instruccion", "AAccidental", "Guardia", "P.Neg", "P.Esp", "TOTAL"];
-  let html = "<table><tr><th>Mes</th>" + categorias.map(c => `<th>${c}</th>`).join("") + "</tr>";
+let html = `
+  <table>
+    <thead>
+      <tr><th>Mes</th>${categorias.map(c => `<th>${c}</th>`).join("")}</tr>
+    </thead>
+    <tbody>
+`;
   const ordenMeses = ["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
   let totales = {};
   for (let c of categorias) totales[c] = 0;
@@ -75,7 +81,13 @@ function renderCalificaciones(mesSeleccionado) {
     const fila = calif[mes];
     if (!fila) continue;
 
-    html += `<tr><td>${mes}</td>`;
+   html += `<tr><td>${mes}</td> ... </tr>`;
+}
+
+html += `
+    </tbody>
+  </table>
+`;
     for (let c of categorias) {
       const val = parseFloat(fila[c]) || 0;
       html += `<td>${val.toFixed(2)}</td>`;
