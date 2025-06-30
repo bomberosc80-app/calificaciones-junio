@@ -224,5 +224,11 @@ button:hover {
   padding: 8px;
   border-radius: 10px;
 }
+.linea-firma {
+  width: 60%;
+  margin: 0 auto 10px auto;
+  border: 0;
+  border-top: 1px dashed #f55;
+}
 
 }
