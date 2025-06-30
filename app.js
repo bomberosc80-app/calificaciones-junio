@@ -109,6 +109,7 @@ function renderCalificaciones(mesSeleccionado) {
 
   mostrarPorcentajeHT(usuarioActual);
 }
+}
 
 function previsualizarCSV() {
   const archivo = document.getElementById("archivoCSV").files[0];
