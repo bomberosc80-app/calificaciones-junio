@@ -89,24 +89,25 @@ function renderCalificaciones(mesSeleccionado) {
     for (let c of categorias) {
       html += `<td><strong>${totales[c].toFixed(2)}</strong></td>`;
     }
+    html += "</tr>`;
+  }
 
-  html += "</table>";
+  // 🔽 Cierro la tabla y agrego firma siempre
+  html += `</table>
+    <div class="firma-digital fade-in">
+      <hr class="linea-firma">
+      <span class="icono-firma">🖊️</span>
+      Firmado digitalmente por Epelde Edgardo, Jefe de cuerpo activo.
+    </div>`;
+
+  // 🔽 Inserto en el DOM
   const tabla = document.getElementById("tablaCalificaciones");
   document.getElementById("tablaCalificaciones").innerHTML = html;
-
   tabla.classList.remove("fade-refresh");
   void tabla.offsetWidth;
   tabla.classList.add("fade-refresh");
 
   mostrarPorcentajeHT(usuarioActual);
-
-    html += `</table>
-<div class="firma-digital fade-in">
-  <hr class="linea-firma">
-  <span class="icono-firma">🖊️</span>
-  Firmado digitalmente por Epelde Edgardo, Jefe de cuerpo activo.
-</div>`;
-  }
 }
 
 function previsualizarCSV() {
