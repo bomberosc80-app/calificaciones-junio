@@ -97,7 +97,8 @@ function renderCalificaciones(mesSeleccionado) {
     <div class="firma-digital fade-in">
       <hr class="linea-firma">
       <span class="icono-firma">🖊️</span>
-      Firmado digitalmente por Epelde Edgardo, Jefe de cuerpo activo.
+      Firmado digitalmente por:
+ Epelde Edgardo, Jefe de cuerpo activo.
     </div>`;
 
   // 🔽 Inserto en el DOM
