@@ -3,6 +3,7 @@
   box-sizing: border-box;
 }
 
+/* Cuerpo */
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -50,7 +51,7 @@ h2 {
   color: #ff4b4b;
 }
 
-/* Inputs y botones */
+/* Inputs y selectores */
 input[type="text"],
 input[type="password"],
 input[type="file"],
@@ -65,6 +66,7 @@ select {
   font-size: 16px;
 }
 
+/* Botones */
 button {
   background-color: #ff4b4b;
   color: #121212;
@@ -75,14 +77,15 @@ button {
   font-weight: bold;
   margin-top: 0.5rem;
   width: 100%;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
 }
 
 button:hover {
   background-color: #ff7777;
+  transform: scale(1.03);
 }
 
-/* Header de sesión */
+/* Encabezado */
 .header {
   display: flex;
   flex-wrap: wrap;
@@ -96,20 +99,36 @@ button:hover {
   margin: 0;
   flex: 1;
 }
-/* Zebra striping */
-#tablaCalificaciones tr:nth-child(even) {
-  background-color: #1e1e1e;
+
+/* Tabla de calificaciones */
+#tablaCalificaciones {
+  overflow-x: auto;
+  max-width: 100%;
+  margin-top: 20px;
+  border-radius: 12px;
+  transition: opacity 0.4s ease;
 }
 
-#tablaCalificaciones th,
-#tablaCalificaciones td {
+#tablaCalificaciones table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+#tablaCalificaciones table th,
+#tablaCalificaciones table td {
   padding: 10px;
   text-align: center;
   border: 1px solid #444;
   color: #f55;
 }
 
-/* Estilo cabecera */
+/* Zebra striping */
+#tablaCalificaciones table tr:nth-child(even) {
+  background-color: #1e1e1e;
+}
+
+/* Cabecera fija */
 #tablaCalificaciones th {
   background-color: #222;
   position: sticky;
@@ -128,106 +147,40 @@ button:hover {
   font-weight: bold;
 }
 
-/* Total anual destacado */
+/* Fila total anual */
 .admin-total {
   background-color: #333;
   font-weight: bold;
 }
 
-/* Scroll dentro de la tabla */
-#tablaCalificaciones {
-  overflow-x: auto;
-  max-height: 400px;
-}
-/* Tabla y panel admin */
-#tablaCalificaciones {
-  overflow-x: auto;
-  max-width: 100%;
-  margin-top: 20px;
-  border-radius: 12px;
-}
-
-#tablaCalificaciones table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 800px;
-}
-
+/* Panel administrador */
 #panelAdmin {
   margin-top: 2rem;
   text-align: left;
 }
 
+/* Ocultar elementos */
 .hidden {
   display: none;
 }
 
-/* Responsive */
-@media (max-width: 480px) {
-  .container {
-    padding: 1rem;
-  }
-
-  .header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .header button {
-    width: 100%;
-  }
-
-  select {
-    font-size: 1rem;
-  }
-  .footer {
-  margin-top: 2rem;
-  font-size: 0.85rem;
-  color: #ff4b4b;
-  opacity: 0.6;
+/* Porcentaje asistencias */
+#porcentajeAsistencias {
+  margin-top: 30px;
   text-align: center;
-}
-  /* Animaciones suaves */
-.fade-in {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeInUp 0.5s ease-out forwards;
-}
-
-@keyframes fadeInUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #f55;
+  background-color: #111;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #f004;
+  z-index: 2;
+  position: relative;
 }
 
-button {
-  transition: all 0.3s ease;
-}
-
-button:hover {
-  transform: scale(1.03);
-  background-color: #ff7777;
-}
-
-#tablaCalificaciones {
-  transition: opacity 0.4s ease;
-}
-  .fade-refresh {
-  animation: fadeInUp 0.4s ease-out;
-}
-.porcentaje-box {
-  background-color: #2a2a2a;
-  border-left: 4px solid #ff4b4b;
-  padding: 1rem;
-  margin-top: 1.5rem;
-  border-radius: 12px;
-  font-size: 1rem;
-  color: #ff4b4b;
-  animation: fadeInUp 0.5s ease;
-  
-}
- .firma-digital {
+/* Firma digital */
+.firma-digital {
   margin-top: 30px;
   text-align: center;
   font-style: italic;
@@ -248,22 +201,49 @@ button:hover {
   font-size: 1.1em;
 }
 
-@keyframes fadeInFirma {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 0.85; transform: translateY(0); }
-}
-  #porcentajeAsistencias {
-margin-top: 30px;
-  text-align: center;
-  font-style: italic;
-  font-size: 0.95rem;
-  color: #f55;
-  background-color: #111;
-  padding: 10px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px #f004;
-  z-index: 2;
-  position: relative;
+/* Animaciones */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.5s ease-out forwards;
 }
 
+.fade-refresh {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Footer */
+.footer {
+  margin-top: 2rem;
+  font-size: 0.85rem;
+  color: #ff4b4b;
+  opacity: 0.6;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header button {
+    width: 100%;
+  }
+
+  select {
+    font-size: 1rem;
+  }
 }
