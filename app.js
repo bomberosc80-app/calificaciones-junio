@@ -89,7 +89,7 @@ function renderCalificaciones(mesSeleccionado) {
     for (let c of categorias) {
       html += `<td><strong>${totales[c].toFixed(2)}</strong></td>`;
     }
-    html += "</tr>";
+html += `</table><div class="firma-digital">Firmado digitalmente por Epelde Edgardo, Jefe de cuerpo activo.</div>`;
   }
 
   html += "</table>";
