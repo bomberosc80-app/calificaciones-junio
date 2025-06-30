@@ -89,8 +89,6 @@ function renderCalificaciones(mesSeleccionado) {
     for (let c of categorias) {
       html += `<td><strong>${totales[c].toFixed(2)}</strong></td>`;
     }
-html += `</table><div class="firma-digital">Firmado digitalmente por Epelde Edgardo, Jefe de cuerpo activo.</div>`;
-  }
 
   html += "</table>";
   const tabla = document.getElementById("tablaCalificaciones");
@@ -101,6 +99,14 @@ html += `</table><div class="firma-digital">Firmado digitalmente por Epelde Edga
   tabla.classList.add("fade-refresh");
 
   mostrarPorcentajeHT(usuarioActual);
+
+    html += `</table>
+<div class="firma-digital fade-in">
+  <hr class="linea-firma">
+  <span class="icono-firma">🖊️</span>
+  Firmado digitalmente por Epelde Edgardo, Jefe de cuerpo activo.
+</div>`;
+  }
 }
 
 function previsualizarCSV() {
