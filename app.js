@@ -84,12 +84,12 @@ function renderCalificaciones(mesSeleccionado) {
     html += "</tr>";
   }
 
-  if (mesSeleccionado === "ANUAL") {
+    if (mesSeleccionado === "ANUAL") {
     html += `<tr class="admin-total"><td><strong>TOTAL ANUAL</strong></td>`;
     for (let c of categorias) {
       html += `<td><strong>${totales[c].toFixed(2)}</strong></td>`;
     }
-    html += "</tr>`;
+    html += "</tr>";  // ✅ Comilla corregida
   }
 
   // 🔽 Cierro la tabla y agrego firma siempre
@@ -108,8 +108,7 @@ function renderCalificaciones(mesSeleccionado) {
   tabla.classList.add("fade-refresh");
 
   mostrarPorcentajeHT(usuarioActual);
-}
-}
+}  // ✅ Esta es la única llave que debe cerrar la función
 
 function previsualizarCSV() {
   const archivo = document.getElementById("archivoCSV").files[0];
