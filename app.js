@@ -79,8 +79,6 @@ function renderCalificaciones(mesSeleccionado) {
   const val = parseFloat(fila[c]) || 0;
   html += `<td>${val.toFixed(2)}</td>`;
   totales[c] += val;
-}
-
     }
     html += "</tr>";
   }
