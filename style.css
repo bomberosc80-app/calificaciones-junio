@@ -124,7 +124,7 @@ button:hover {
 }
 
 /* Zebra striping */
-#tablaCalificaciones table tr:nth-child(even) {
+#tablaCalificaciones table tbody tr:nth-child(even) {
   background-color: #1e1e1e;
 }
 
