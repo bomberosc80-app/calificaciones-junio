@@ -181,4 +181,12 @@ button:hover {
   color: #ff4b4b;
   animation: fadeInUp 0.5s ease;
 }
+  .firma-digital {
+  margin-top: 10px;
+  text-align: right;
+  font-style: italic;
+  color: #ff5555;
+  font-size: 0.9em;
+  opacity: 0.75;
+}
 }
