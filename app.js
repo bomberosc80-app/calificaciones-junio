@@ -65,10 +65,17 @@ async function cargarDatos() {
 function renderCalificaciones(mesSeleccionado) {
   const calif = datos[usuarioActual]?.calificaciones || {};
   const categorias = ["Ded.Interna", "Roperia", "Asist.Diaria", "O.Interno", "Instruccion", "AAccidental", "Guardia", "P.Neg", "P.Esp", "TOTAL"];
-  let html = "<table><tr><th>Mes</th>" + categorias.map(c => `<th>${c}</th>`).join("") + "</tr>";
   const ordenMeses = ["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
   let totales = {};
   for (let c of categorias) totales[c] = 0;
+
+  let html = `
+    <table>
+      <thead>
+        <tr><th>Mes</th>${categorias.map(c => `<th>${c}</th>`).join("")}</tr>
+      </thead>
+      <tbody>
+  `;
 
   for (let mes of ordenMeses) {
     if (mesSeleccionado !== "ANUAL" && mes !== mesSeleccionado) continue;
@@ -81,36 +88,35 @@ function renderCalificaciones(mesSeleccionado) {
       html += `<td>${val.toFixed(2)}</td>`;
       totales[c] += val;
     }
-    html += "</tr>";
+    html += `</tr>`;
   }
 
-    if (mesSeleccionado === "ANUAL") {
+  if (mesSeleccionado === "ANUAL") {
     html += `<tr class="admin-total"><td><strong>TOTAL ANUAL</strong></td>`;
     for (let c of categorias) {
       html += `<td><strong>${totales[c].toFixed(2)}</strong></td>`;
     }
-    html += "</tr>";  // ✅ Comilla corregida
+    html += `</tr>`;
   }
 
-  // 🔽 Cierro la tabla y agrego firma siempre
-  html += `</table>
+  html += `
+      </tbody>
+    </table>
     <div class="firma-digital fade-in">
       <hr class="linea-firma">
       <span class="icono-firma">🖊️</span>
-      Firmado digitalmente por:
- Epelde Edgardo, Jefe de cuerpo activo.
-    </div>`;
+      Firmado digitalmente por Epelde Edgardo, Jefe de cuerpo activo.
+    </div>
+  `;
 
-  // 🔽 Inserto en el DOM
   const tabla = document.getElementById("tablaCalificaciones");
-  document.getElementById("tablaCalificaciones").innerHTML = html;
+  tabla.innerHTML = html;
   tabla.classList.remove("fade-refresh");
   void tabla.offsetWidth;
   tabla.classList.add("fade-refresh");
 
   mostrarPorcentajeHT(usuarioActual);
-}  // ✅ Esta es la única llave que debe cerrar la función
-
+}
 function previsualizarCSV() {
   const archivo = document.getElementById("archivoCSV").files[0];
   if (!archivo) return alert("Selecciona un archivo CSV.");
