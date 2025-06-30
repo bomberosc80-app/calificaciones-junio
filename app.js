@@ -100,7 +100,7 @@ function renderCalificaciones(mesSeleccionado) {
   // Llamada correcta a mostrar porcentaje
   mostrarPorcentajeHT(usuarioActual);
 }
-
+}
 function previsualizarCSV() {
   const archivo = document.getElementById("archivoCSV").files[0];
   if (!archivo) return alert("Selecciona un archivo CSV.");
