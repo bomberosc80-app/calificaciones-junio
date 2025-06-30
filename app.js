@@ -74,11 +74,12 @@ function renderCalificaciones(mesSeleccionado) {
     if (mesSeleccionado !== "ANUAL" && mes !== mesSeleccionado) continue;
     const fila = calif[mes];
     if (!fila) continue;
+
     html += `<tr><td>${mes}</td>`;
-  for (let c of categorias) {
-  const val = parseFloat(fila[c]) || 0;
-  html += `<td>${val.toFixed(2)}</td>`;
-  totales[c] += val;
+    for (let c of categorias) {
+      const val = parseFloat(fila[c]) || 0;
+      html += `<td>${val.toFixed(2)}</td>`;
+      totales[c] += val;
     }
     html += "</tr>";
   }
@@ -90,17 +91,18 @@ function renderCalificaciones(mesSeleccionado) {
     }
     html += "</tr>";
   }
+
   html += "</table>";
   const tabla = document.getElementById("tablaCalificaciones");
   document.getElementById("tablaCalificaciones").innerHTML = html;
-  // Animación después de renderizar
+
   tabla.classList.remove("fade-refresh");
   void tabla.offsetWidth;
   tabla.classList.add("fade-refresh");
-  // Llamada correcta a mostrar porcentaje
+
   mostrarPorcentajeHT(usuarioActual);
 }
-}
+
 function previsualizarCSV() {
   const archivo = document.getElementById("archivoCSV").files[0];
   if (!archivo) return alert("Selecciona un archivo CSV.");
