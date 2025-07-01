@@ -107,7 +107,7 @@ function renderCalificaciones(mesSeleccionado) {
   <span class="icono-firma">🖊️</span>
   Firmado digitalmente por Epelde Edgardo, Jefe de cuerpo activo.
   <div class="imagen-firma">
-    <img src="https://https://bomberosc80-app.github.io/calificaciones-junio/FIRMA.png" alt="Firma digital de Epelde Edgardo">
+    <img src="https://bomberosc80-app.github.io/calificaciones-junio/firma.png" alt="Firma digital de Epelde Edgardo">
   </div>
 </div>
 
