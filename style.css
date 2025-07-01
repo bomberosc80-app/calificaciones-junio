@@ -245,11 +245,41 @@ button:hover {
 
   select {
     font-size: 1rem;
-  }
-  .imagen-firma img {
-  margin-top: 10px;
-  height: 80px;
-  opacity: 0.8;
+.firma-digital {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 0.9rem;
+  color: #ff4b4b;
+  opacity: 0.9;
+  position: relative;
 }
 
+.firma-digital .linea-firma {
+  border: none;
+  border-top: 1px solid #ff4b4b;
+  margin: 20px auto 10px auto;
+  width: 80%;
+}
+
+.firma-digital .icono-firma {
+  font-size: 1.2rem;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.imagen-firma img {
+  margin-top: 10px;
+  height: 90px;
+  max-width: 300px;
+  filter: brightness(1.2) contrast(1.2);
+  opacity: 0.95;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(255, 75, 75, 0.3);
+}
+
+.imagen-firma img:hover {
+  transform: scale(1.03);
+  opacity: 1;
+}
 }
