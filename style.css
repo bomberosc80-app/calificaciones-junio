@@ -246,4 +246,10 @@ button:hover {
   select {
     font-size: 1rem;
   }
+  .imagen-firma img {
+  margin-top: 10px;
+  height: 80px;
+  opacity: 0.8;
+}
+
 }
