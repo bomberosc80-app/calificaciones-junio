@@ -17,7 +17,13 @@ async function iniciarSesion() {
     usuarioActual = usuario;
     document.getElementById("login").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
-    document.getElementById("app").classList.add("fade-in");
+
+    // ✨ ANIMACIÓN: Aparece la app con transición
+    const app = document.getElementById("app");
+    app.classList.remove("aparecer"); // Reinicia si ya tenía animación
+    void app.offsetWidth;
+    app.classList.add("aparecer");
+
     document.getElementById("nombreUsuario").innerText = user.NOMBRE || usuario;
     if (usuario === "admin") document.getElementById("panelAdmin").classList.remove("hidden");
     await cargarDatos();
@@ -26,6 +32,7 @@ async function iniciarSesion() {
     alert("Usuario o clave incorrectos.");
   }
 }
+
 
 function cerrarSesion() {
   usuarioActual = null;
@@ -114,11 +121,11 @@ function renderCalificaciones(mesSeleccionado) {
 
   `;
 
-  const tabla = document.getElementById("tablaCalificaciones");
-  tabla.innerHTML = html;
-  tabla.classList.remove("fade-refresh");
-  void tabla.offsetWidth;
-  tabla.classList.add("fade-refresh");
+ const tabla = document.getElementById("tablaCalificaciones");
+tabla.innerHTML = html;
+tabla.classList.remove("aparecer"); // reinicia animación
+void tabla.offsetWidth;
+tabla.classList.add("aparecer");
 
   mostrarPorcentajeHT(usuarioActual);
 }
