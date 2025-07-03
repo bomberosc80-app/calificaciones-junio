@@ -1,4 +1,3 @@
-
 let datos = {};
 const usuarios = {
   "80306": { CLAVE: "1234", NOMBRE: "Sergio" },
@@ -17,13 +16,7 @@ async function iniciarSesion() {
     usuarioActual = usuario;
     document.getElementById("login").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
-
-    // ✨ ANIMACIÓN: Aparece la app con transición
-    const app = document.getElementById("app");
-    app.classList.remove("aparecer"); // Reinicia si ya tenía animación
-    void app.offsetWidth;
-    app.classList.add("aparecer");
-
+    document.getElementById("app").classList.add("fade-in");
     document.getElementById("nombreUsuario").innerText = user.NOMBRE || usuario;
     if (usuario === "admin") document.getElementById("panelAdmin").classList.remove("hidden");
     await cargarDatos();
@@ -32,7 +25,6 @@ async function iniciarSesion() {
     alert("Usuario o clave incorrectos.");
   }
 }
-
 
 function cerrarSesion() {
   usuarioActual = null;
@@ -77,37 +69,37 @@ function renderCalificaciones(mesSeleccionado) {
   let totales = {};
   for (let c of categorias) totales[c] = 0;
 
-  let html = `
+  let html = 
     <table>
       <thead>
-        <tr><th>Mes</th>${categorias.map(c => `<th>${c}</th>`).join("")}</tr>
+        <tr><th>Mes</th>${categorias.map(c => <th>${c}</th>).join("")}</tr>
       </thead>
       <tbody>
-  `;
+  ;
 
   for (let mes of ordenMeses) {
     if (mesSeleccionado !== "ANUAL" && mes !== mesSeleccionado) continue;
     const fila = calif[mes];
     if (!fila) continue;
 
-    html += `<tr><td>${mes}</td>`;
+    html += <tr><td>${mes}</td>;
     for (let c of categorias) {
       const val = parseFloat(fila[c]) || 0;
-      html += `<td>${val.toFixed(2)}</td>`;
+      html += <td>${val.toFixed(2)}</td>;
       totales[c] += val;
     }
-    html += `</tr>`;
+    html += </tr>;
   }
 
   if (mesSeleccionado === "ANUAL") {
-    html += `<tr class="admin-total"><td><strong>TOTAL ANUAL</strong></td>`;
+    html += <tr class="admin-total"><td><strong>TOTAL ANUAL</strong></td>;
     for (let c of categorias) {
-      html += `<td><strong>${totales[c].toFixed(2)}</strong></td>`;
+      html += <td><strong>${totales[c].toFixed(2)}</strong></td>;
     }
-    html += `</tr>`;
+    html += </tr>;
   }
 
-  html += `
+  html += 
       </tbody>
     </table>
     <div class="firma-digital fade-in">
@@ -119,13 +111,13 @@ function renderCalificaciones(mesSeleccionado) {
   </div>
 </div>
 
-  `;
+  ;
 
- const tabla = document.getElementById("tablaCalificaciones");
-tabla.innerHTML = html;
-tabla.classList.remove("aparecer"); // reinicia animación
-void tabla.offsetWidth;
-tabla.classList.add("aparecer");
+  const tabla = document.getElementById("tablaCalificaciones");
+  tabla.innerHTML = html;
+  tabla.classList.remove("fade-refresh");
+  void tabla.offsetWidth;
+  tabla.classList.add("fade-refresh");
 
   mostrarPorcentajeHT(usuarioActual);
 }
@@ -138,7 +130,7 @@ function previsualizarCSV() {
     let html = "<table>";
     for (let i = 0; i < lineas.length; i++) {
       const columnas = lineas[i].split(",");
-      html += "<tr>" + columnas.map(col => `<td>${col}</td>`).join("") + "</tr>";
+      html += "<tr>" + columnas.map(col => <td>${col}</td>).join("") + "</tr>";
     }
     html += "</table>";
     document.getElementById("preview").innerHTML = html;
@@ -163,7 +155,7 @@ function mostrarPorcentajeHT(usuarioId) {
       const div = document.getElementById("porcentajeAsistencias");
 
       if (porcentaje !== null) {
-        div.textContent = `Porcentaje de Asistencias a intervenciones: ${porcentaje.toFixed(1)}%`;
+        div.textContent = Porcentaje de Asistencias a intervenciones: ${porcentaje.toFixed(1)}%;
         div.classList.remove("hidden");
       } else {
         div.textContent = "";
