@@ -1,7 +1,7 @@
+
 let datos = {};
 const usuarios = {
-  "80306": { CLAVE: "1234", NOMBRE: "Sergio" },
-  "80312": { CLAVE: "NERINA312", NOMBRE: "Nerina" },
+  "c80306": { CLAVE: "1234", NOMBRE: "Sergio" },
   "admin": { CLAVE: "admin123", NOMBRE: "Administrador" },
   "juan23": { CLAVE: "1234", NOMBRE: "Juan Pérez" }
 };
@@ -69,49 +69,45 @@ function renderCalificaciones(mesSeleccionado) {
   let totales = {};
   for (let c of categorias) totales[c] = 0;
 
-  let html = 
+  let html = `
     <table>
       <thead>
-        <tr><th>Mes</th>${categorias.map(c => <th>${c}</th>).join("")}</tr>
+        <tr><th>Mes</th>${categorias.map(c => `<th>${c}</th>`).join("")}</tr>
       </thead>
       <tbody>
-  ;
+  `;
 
   for (let mes of ordenMeses) {
     if (mesSeleccionado !== "ANUAL" && mes !== mesSeleccionado) continue;
     const fila = calif[mes];
     if (!fila) continue;
 
-    html += <tr><td>${mes}</td>;
+    html += `<tr><td>${mes}</td>`;
     for (let c of categorias) {
       const val = parseFloat(fila[c]) || 0;
-      html += <td>${val.toFixed(2)}</td>;
+      html += `<td>${val.toFixed(2)}</td>`;
       totales[c] += val;
     }
-    html += </tr>;
+    html += `</tr>`;
   }
 
   if (mesSeleccionado === "ANUAL") {
-    html += <tr class="admin-total"><td><strong>TOTAL ANUAL</strong></td>;
+    html += `<tr class="admin-total"><td><strong>TOTAL ANUAL</strong></td>`;
     for (let c of categorias) {
-      html += <td><strong>${totales[c].toFixed(2)}</strong></td>;
+      html += `<td><strong>${totales[c].toFixed(2)}</strong></td>`;
     }
-    html += </tr>;
+    html += `</tr>`;
   }
 
-  html += 
+  html += `
       </tbody>
     </table>
     <div class="firma-digital fade-in">
-  <hr class="linea-firma">
-  <span class="icono-firma">🖊️</span>
-  Firmado digitalmente por:
-  <div class="imagen-firma">
-    <img src="https://bomberosc80-app.github.io/calificaciones-junio/firma.png" alt="Firma digital de Epelde Edgardo">
-  </div>
-</div>
-
-  ;
+      <hr class="linea-firma">
+      <span class="icono-firma">🖊️</span>
+      Firmado digitalmente por Epelde Edgardo, Jefe de cuerpo activo.
+    </div>
+  `;
 
   const tabla = document.getElementById("tablaCalificaciones");
   tabla.innerHTML = html;
@@ -130,7 +126,7 @@ function previsualizarCSV() {
     let html = "<table>";
     for (let i = 0; i < lineas.length; i++) {
       const columnas = lineas[i].split(",");
-      html += "<tr>" + columnas.map(col => <td>${col}</td>).join("") + "</tr>";
+      html += "<tr>" + columnas.map(col => `<td>${col}</td>`).join("") + "</tr>";
     }
     html += "</table>";
     document.getElementById("preview").innerHTML = html;
@@ -155,7 +151,7 @@ function mostrarPorcentajeHT(usuarioId) {
       const div = document.getElementById("porcentajeAsistencias");
 
       if (porcentaje !== null) {
-        div.textContent = Porcentaje de Asistencias a intervenciones: ${porcentaje.toFixed(1)}%;
+        div.textContent = `Porcentaje de Asistencias a intervenciones: ${porcentaje.toFixed(1)}%`;
         div.classList.remove("hidden");
       } else {
         div.textContent = "";
