@@ -201,12 +201,21 @@ button:hover {
   font-size: 1.1em;
 }
 
-.imagen-firma img {
-  pointer-events: none;
+.imagen-firma {
+  height: 90px;
+  max-width: 300px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: brightness(1.2) contrast(1.2);
+  opacity: 0.95;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(255, 75, 75, 0.3);
   user-select: none;
-  -webkit-user-drag: none;
-  touch-action: none;
+  pointer-events: none;
 }
+
 
 /* Animaciones */
 .fade-in {
