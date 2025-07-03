@@ -188,17 +188,15 @@ button:hover {
   color: #f55;
 }
 
-.linea-firma {
-  border: none;
-  border-top: 1px solid #ff5555;
-  margin-bottom: 6px;
-  width: 100%;
-  opacity: 0.4;
-}
-
-.icono-firma {
-  margin-right: 6px;
-  font-size: 1.1em;
+/* Imagen de la firma */
+.imagen-firma {
+  margin-top: 10px;
+  max-width: 200px;
+  mix-blend-mode: lighten; /* Para "eliminar" fondo negro visualmente */
+  user-select: none;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  filter: brightness(1.2) contrast(1.2);
 }
 
 /* Animaciones */
