@@ -180,9 +180,20 @@ button:hover {
 }
 
 /* Firma digital */
-.firma-digital img {
-  background: transparent;
-  mix-blend-mode: multiply;  /* o lighten/darken según el fondo */
+.firma-digital {
+  margin-top: 30px;
+  text-align: center;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #f55;
+}
+
+.linea-firma {
+  border: none;
+  border-top: 1px solid #ff5555;
+  margin-bottom: 6px;
+  width: 100%;
+  opacity: 0.4;
 }
 
 .icono-firma {
@@ -190,24 +201,6 @@ button:hover {
   font-size: 1.1em;
 }
 
-.imagen-firma {
-  background-color: #000; /* Negro total */
-  height: 90px;
-  max-width: 300px;
-  background-image: url('https://bomberosc80-app.github.io/calificaciones-junio/firma.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  filter: brightness(1.1) contrast(1.2);
-  opacity: 0.95;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  border-radius: 4px;
-  box-shadow: none;
-  user-select: none;
-  pointer-events: none;
-  mix-blend-mode: lighten;
-
-}
 /* Animaciones */
 .fade-in {
   opacity: 0;
