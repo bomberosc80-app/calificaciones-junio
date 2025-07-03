@@ -136,14 +136,20 @@ button:hover {
   overflow: hidden;
 }
 
-#tablaCalificaciones th,
-#tablaCalificaciones td {
-  padding: 12px;
-  text-align: center;
-  border: 1px solid #2a2a2a;
-  color: #ff4b4b;
-  font-size: 0.95rem;
+#tablaCalificaciones td:first-child,
+#tablaCalificaciones th:first-child {
+  position: sticky;
+  left: 0;
+  background-color: #111; /* Contraste fuerte */
+  z-index: 4; /* más alto que el resto */
+  text-align: left;
+  font-weight: bold;
+  color: #ff8888;
+  border-right: 1px solid #2a2a2a;
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.4); /* sombra lateral */
+  backdrop-filter: blur(3px);
 }
+
 
 /* Zebra striping */
 #tablaCalificaciones table tbody tr:nth-child(even) {
@@ -153,30 +159,6 @@ button:hover {
 #tablaCalificaciones table tbody tr:hover {
   background-color: #262626;
   transition: background-color 0.2s ease;
-}
-
-/* Cabecera fija */
-#tablaCalificaciones th {
-  background-color: #1f1f1f;
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  font-weight: bold;
-  font-size: 0.96rem;
-  color: #ff6666;
-}
-
-/* Columna "Mes" fija */
-#tablaCalificaciones td:first-child,
-#tablaCalificaciones th:first-child {
-  position: sticky;
-  left: 0;
-  background-color: #111;
-  z-index: 3;
-  text-align: left;
-  font-weight: bold;
-  color: #ff8888;
-  border-right: 1px solid #2a2a2a;
 }
 
 /* Fila total anual */
