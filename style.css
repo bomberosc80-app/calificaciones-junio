@@ -1,12 +1,11 @@
 /* Reset general */
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 /* Cuerpo */
 body {
+  margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #121212;
   color: #ff4b4b;
@@ -24,13 +23,8 @@ body {
   background-color: #1e1e1e;
   padding: 2rem;
   border-radius: 20px;
-  box-shadow: 0 0 25px rgba(255, 75, 75, 0.1);
+  box-shadow: 0 0 20px rgba(255, 75, 75, 0.2);
   text-align: center;
-  transition: transform 0.3s ease;
-}
-
-.container:hover {
-  transform: translateY(-2px);
 }
 
 /* Logo */
@@ -63,21 +57,13 @@ input[type="password"],
 input[type="file"],
 select {
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.7rem;
   margin: 0.5rem 0;
-  border-radius: 12px;
-  border: 1px solid #333;
-  background-color: #1b1b1b;
+  border-radius: 10px;
+  border: none;
+  background-color: #2a2a2a;
   color: #ff4b4b;
   font-size: 16px;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
-}
-
-input:focus,
-select:focus {
-  border-color: #ff4b4b;
-  outline: none;
-  background-color: #222;
 }
 
 /* Botones */
@@ -85,20 +71,18 @@ button {
   background-color: #ff4b4b;
   color: #121212;
   border: none;
-  padding: 0.75rem 1.2rem;
-  border-radius: 12px;
+  padding: 0.7rem 1.2rem;
+  border-radius: 10px;
   cursor: pointer;
   font-weight: bold;
   margin-top: 0.5rem;
   width: 100%;
   transition: all 0.3s ease;
-  box-shadow: 0 0 8px #ff4b4b44;
 }
 
 button:hover {
   background-color: #ff7777;
   transform: scale(1.03);
-  box-shadow: 0 0 12px #ff4b4b88;
 }
 
 /* Encabezado */
@@ -122,52 +106,51 @@ button:hover {
   max-width: 100%;
   margin-top: 20px;
   border-radius: 12px;
-  box-shadow: 0 0 15px rgba(255, 75, 75, 0.1);
-  background-color: #181818;
   transition: opacity 0.4s ease;
 }
 
 #tablaCalificaciones table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+  border-collapse: collapse;
   min-width: 800px;
-  border-radius: 12px;
-  overflow: hidden;
 }
 
+#tablaCalificaciones table th,
+#tablaCalificaciones table td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #444;
+  color: #f55;
+}
+
+/* Zebra striping */
+#tablaCalificaciones table tbody tr:nth-child(even) {
+  background-color: #1e1e1e;
+}
+
+/* Cabecera fija */
+#tablaCalificaciones th {
+  background-color: #222;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* Columna "Mes" fija */
 #tablaCalificaciones td:first-child,
 #tablaCalificaciones th:first-child {
   position: sticky;
   left: 0;
-  background-color: #111; /* Contraste fuerte */
-  z-index: 4; /* más alto que el resto */
+  background-color: #111;
+  z-index: 3;
   text-align: left;
   font-weight: bold;
-  color: #ff8888;
-  border-right: 1px solid #2a2a2a;
-  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.4); /* sombra lateral */
-  backdrop-filter: blur(3px);
-}
-
-
-/* Zebra striping */
-#tablaCalificaciones table tbody tr:nth-child(even) {
-  background-color: #1a1a1a;
-}
-
-#tablaCalificaciones table tbody tr:hover {
-  background-color: #262626;
-  transition: background-color 0.2s ease;
 }
 
 /* Fila total anual */
 .admin-total {
-  background-color: #292929;
+  background-color: #333;
   font-weight: bold;
-  color: #ff7777;
-  border-top: 2px solid #ff4b4b;
-  box-shadow: inset 0 1px 0 rgba(255, 75, 75, 0.2);
 }
 
 /* Panel administrador */
@@ -198,41 +181,24 @@ button:hover {
 
 /* Firma digital */
 .firma-digital {
+  margin-top: 30px;
   text-align: center;
-  margin-top: 40px;
-  font-size: 0.9rem;
-  color: #ff4b4b;
-  opacity: 0.9;
-  position: relative;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #f55;
 }
 
-.firma-digital .linea-firma {
+.linea-firma {
   border: none;
-  border-top: 1px solid #ff4b4b;
-  margin: 20px auto 10px auto;
-  width: 80%;
+  border-top: 1px solid #ff5555;
+  margin-bottom: 6px;
+  width: 100%;
+  opacity: 0.4;
 }
 
-.firma-digital .icono-firma {
-  font-size: 1.2rem;
+.icono-firma {
   margin-right: 6px;
-  vertical-align: middle;
-}
-
-.imagen-firma img {
-  margin-top: 10px;
-  height: 90px;
-  max-width: 300px;
-  filter: brightness(1.2) contrast(1.2);
-  opacity: 0.95;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  border-radius: 6px;
-  box-shadow: 0 0 10px rgba(255, 75, 75, 0.3);
-}
-
-.imagen-firma img:hover {
-  transform: scale(1.03);
-  opacity: 1;
+  font-size: 1.1em;
 }
 
 /* Animaciones */
@@ -279,21 +245,41 @@ button:hover {
 
   select {
     font-size: 1rem;
-  }
-  /* Animación general */
-@keyframes fadeSlide {
-  0% {
-    opacity: 0;
-    transform: translateY(20px) scale(0.98);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+.firma-digital {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 0.9rem;
+  color: #ff4b4b;
+  opacity: 0.9;
+  position: relative;
 }
 
-.aparecer {
-  animation: fadeSlide 0.5s ease-out forwards;
+.firma-digital .linea-firma {
+  border: none;
+  border-top: 1px solid #ff4b4b;
+  margin: 20px auto 10px auto;
+  width: 80%;
 }
 
+.firma-digital .icono-firma {
+  font-size: 1.2rem;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.imagen-firma img {
+  margin-top: 10px;
+  height: 90px;
+  max-width: 300px;
+  filter: brightness(1.2) contrast(1.2);
+  opacity: 0.95;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(255, 75, 75, 0.3);
+}
+
+.imagen-firma img:hover {
+  transform: scale(1.03);
+  opacity: 1;
+}
 }
