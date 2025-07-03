@@ -201,6 +201,13 @@ button:hover {
   font-size: 1.1em;
 }
 
+.imagen-firma img {
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  touch-action: none;
+}
+
 /* Animaciones */
 .fade-in {
   opacity: 0;
