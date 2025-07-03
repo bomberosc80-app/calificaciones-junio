@@ -180,12 +180,9 @@ button:hover {
 }
 
 /* Firma digital */
-.firma-digital {
-  margin-top: 30px;
-  text-align: center;
-  font-style: italic;
-  font-size: 0.95rem;
-  color: #f55;
+.firma-digital img {
+  background: transparent;
+  mix-blend-mode: multiply;  /* o lighten/darken según el fondo */
 }
 
 .icono-firma {
