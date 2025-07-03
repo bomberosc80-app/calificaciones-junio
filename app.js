@@ -164,4 +164,9 @@ function mostrarPorcentajeHT(usuarioId) {
     .catch(err => {
       console.error("Error al cargar porcentajeht.csv:", err);
     });
+  document.querySelectorAll('img').forEach(img => {
+  img.setAttribute('draggable', 'false');
+  img.style.pointerEvents = 'none';
+});
+
 }
