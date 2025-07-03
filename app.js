@@ -1,4 +1,3 @@
-
 let datos = {};
 const usuarios = {
   "80306": { CLAVE: "1234", NOMBRE: "Sergio" },
@@ -103,13 +102,12 @@ function renderCalificaciones(mesSeleccionado) {
       </tbody>
     </table>
     <div class="firma-digital fade-in">
-  <hr class="linea-firma">
-  <span class="icono-firma">🖊️</span>
-  Firmado digitalmente por Epelde Edgardo, Jefe de cuerpo activo.
-  <br>
-  <img src="https://bomberosc80-app.github.io/calificaciones-junio/firma.png" alt="Firma Jefe" class="imagen-firma" draggable="false">
-</div>
-
+      <hr class="linea-firma">
+      <span class="icono-firma">🖊️</span>
+      Firmado digitalmente por Epelde Edgardo, Jefe de cuerpo activo.
+      <br>
+      <img src="https://bomberosc80-app.github.io/calificaciones-junio/firma.png" alt="Firma Jefe" class="imagen-firma" draggable="false">
+    </div>
   `;
 
   const tabla = document.getElementById("tablaCalificaciones");
@@ -120,6 +118,7 @@ function renderCalificaciones(mesSeleccionado) {
 
   mostrarPorcentajeHT(usuarioActual);
 }
+
 function previsualizarCSV() {
   const archivo = document.getElementById("archivoCSV").files[0];
   if (!archivo) return alert("Selecciona un archivo CSV.");
@@ -136,6 +135,7 @@ function previsualizarCSV() {
   };
   lector.readAsText(archivo);
 }
+
 function mostrarPorcentajeHT(usuarioId) {
   fetch('https://raw.githubusercontent.com/bomberosc80-app/calificaciones-junio/main/porcentajeht.csv')
     .then(res => res.text())
@@ -164,9 +164,12 @@ function mostrarPorcentajeHT(usuarioId) {
     .catch(err => {
       console.error("Error al cargar porcentajeht.csv:", err);
     });
-  document.querySelectorAll('img').forEach(img => {
-  img.setAttribute('draggable', 'false');
-  img.style.pointerEvents = 'none';
-});
-
 }
+
+// Protección para imágenes: impedir arrastre y selección
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll('img').forEach(img => {
+    img.setAttribute('draggable', 'false');
+    img.style.pointerEvents = 'none';
+  });
+});
