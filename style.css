@@ -186,18 +186,29 @@ button:hover {
   font-style: italic;
   font-size: 0.95rem;
   color: #f55;
+  background-color: #1a1a1a; /* opcional: destaca el bloque de firma */
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(255, 75, 75, 0.1);
 }
 
 /* Imagen de la firma */
 .imagen-firma {
   margin-top: 10px;
-  max-width: 200px;
-  mix-blend-mode: lighten; /* Para "eliminar" fondo negro visualmente */
+  max-width: 220px;
+  mix-blend-mode: lighten; /* hace que el fondo negro desaparezca sobre el fondo oscuro */
   user-select: none;
   pointer-events: none;
   -webkit-user-drag: none;
-  filter: brightness(1.2) contrast(1.2);
+  filter: brightness(1.4) contrast(1.2);
+  opacity: 0.95;
+  transition: transform 0.3s ease;
 }
+
+.imagen-firma:hover {
+  transform: scale(1.02);
+}
+
 
 /* Animaciones */
 .fade-in {
