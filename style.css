@@ -194,20 +194,23 @@ button:hover {
 }
 
 .imagen-firma {
+  background-color: #000; /* Negro total */
   height: 90px;
   max-width: 300px;
+  background-image: url('https://bomberosc80-app.github.io/calificaciones-junio/firma.png');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  filter: brightness(1.2) contrast(1.2);
+  filter: brightness(1.1) contrast(1.2);
   opacity: 0.95;
   transition: transform 0.3s ease, opacity 0.3s ease;
-  border-radius: 6px;
+  border-radius: 4px;
+  box-shadow: none;
   user-select: none;
   pointer-events: none;
+  mix-blend-mode: lighten;
+
 }
-
-
 /* Animaciones */
 .fade-in {
   opacity: 0;
