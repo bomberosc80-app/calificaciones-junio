@@ -1,7 +1,7 @@
 
 let datos = {};
 const usuarios = {
-  "80306": { CLAVE: "1234", NOMBRE: "Sergio" },
+  "c80306": { CLAVE: "1234", NOMBRE: "Sergio" },
   "admin": { CLAVE: "admin123", NOMBRE: "Administrador" },
   "juan23": { CLAVE: "1234", NOMBRE: "Juan Pérez" }
 };
@@ -102,23 +102,20 @@ function renderCalificaciones(mesSeleccionado) {
   html += `
       </tbody>
     </table>
-    
+    <div class="firma-digital fade-in">
+      <hr class="linea-firma">
+      <span class="icono-firma">🖊️</span>
+      Firmado digitalmente por Epelde Edgardo, Jefe de cuerpo activo.
+    </div>
+  `;
+
   const tabla = document.getElementById("tablaCalificaciones");
   tabla.innerHTML = html;
   tabla.classList.remove("fade-refresh");
   void tabla.offsetWidth;
   tabla.classList.add("fade-refresh");
-<div class="firma-digital fade-in">
-  <hr class="linea-firma">
-  <span class="icono-firma">🖊️</span>
-  Firmado digitalmente por:
-  <div class="imagen-firma">
- <img src="https://bomberosc80-app.github.io/calificaciones-junio/firma.png" alt="Firma digital de Epelde Edgardo">
- </div>
-</div>
-  `;
-  mostrarPorcentajeHT(usuarioActual);
 
+  mostrarPorcentajeHT(usuarioActual);
 }
 function previsualizarCSV() {
   const archivo = document.getElementById("archivoCSV").files[0];
