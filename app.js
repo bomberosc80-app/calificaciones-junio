@@ -102,7 +102,16 @@ function renderCalificaciones(mesSeleccionado) {
   html += `
       </tbody>
     </table>
-    <div class="firma-digital fade-in">
+    
+  const tabla = document.getElementById("tablaCalificaciones");
+  tabla.innerHTML = html;
+  tabla.classList.remove("fade-refresh");
+  void tabla.offsetWidth;
+  tabla.classList.add("fade-refresh");
+
+  mostrarPorcentajeHT(usuarioActual);
+
+  <div class="firma-digital fade-in">
   <hr class="linea-firma">
   <span class="icono-firma">🖊️</span>
   Firmado digitalmente por:
@@ -111,14 +120,6 @@ function renderCalificaciones(mesSeleccionado) {
  </div>
 </div>
   `;
-
-  const tabla = document.getElementById("tablaCalificaciones");
-  tabla.innerHTML = html;
-  tabla.classList.remove("fade-refresh");
-  void tabla.offsetWidth;
-  tabla.classList.add("fade-refresh");
-
-  mostrarPorcentajeHT(usuarioActual);
 }
 function previsualizarCSV() {
   const archivo = document.getElementById("archivoCSV").files[0];
