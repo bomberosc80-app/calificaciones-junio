@@ -107,7 +107,7 @@ function renderCalificaciones(mesSeleccionado) {
   <span class="icono-firma">🖊️</span>
   Firmado digitalmente por:
   <div class="imagen-firma">
-    <img src="https://bomberosc80-app.github.io/calificaciones-junio/firma.png" alt="Firma digital de Epelde Edgardo">
+  <img src="https://via.placeholder.com/150/FF4B4B/121212?text=Firma" alt="Firma de prueba">
   </div>
 </div>
   `;
