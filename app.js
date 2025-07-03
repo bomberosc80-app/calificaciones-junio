@@ -101,13 +101,6 @@ function renderCalificaciones(mesSeleccionado) {
   html += `
       </tbody>
     </table>
-    <div class="firma-digital fade-in">
-      <hr class="linea-firma">
-      <span class="icono-firma">🖊️</span>
-      Firmado digitalmente por Epelde Edgardo, Jefe de cuerpo activo.
-      <br>
-      <img src="https://bomberosc80-app.github.io/calificaciones-junio/firma.png" alt="Firma Jefe" class="imagen-firma" draggable="false">
-    </div>
   `;
 
   const tabla = document.getElementById("tablaCalificaciones");
