@@ -1,7 +1,7 @@
 
 let datos = {};
 const usuarios = {
-  "c80306": { CLAVE: "1234", NOMBRE: "Sergio" },
+  "80306": { CLAVE: "1234", NOMBRE: "Sergio" },
   "admin": { CLAVE: "admin123", NOMBRE: "Administrador" },
   "juan23": { CLAVE: "1234", NOMBRE: "Juan Pérez" }
 };
