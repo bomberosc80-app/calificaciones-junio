@@ -36,6 +36,7 @@ body {
   width: 100px;
   height: auto;
   margin-bottom: 0.5rem;
+   mix-blend-mode: lighten;
 }
 
 .subtitulo {
