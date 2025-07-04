@@ -33,10 +33,9 @@ body {
 }
 
 .logo-img {
-  width: 100px;
-  height: auto;
-  margin-bottom: 0.5rem;
-   mix-blend-mode: lighten;
+  mix-blend-mode: multiply;
+  filter: brightness(0.95) contrast(1.2);
+  opacity: 0.9;
 }
 
 .subtitulo {
