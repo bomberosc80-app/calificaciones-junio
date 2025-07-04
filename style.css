@@ -36,9 +36,6 @@ body {
    width: 100px;
   height: auto;
   margin-bottom: 0.5rem;
-  mix-blend-mode: multiply;
-  filter: brightness(2.5) contrast(1.2);
-  opacity: 0.9;
 }
 
 .subtitulo {
