@@ -74,7 +74,7 @@ const usuarios = {
   "80313": { CLAVE: "C80313", NOMBRE: "Dana" },
   "80315": { CLAVE: "C80315", NOMBRE: "Macarena" },
   "80320": { CLAVE: "C80320", NOMBRE: "Elizabeth" },
-  "80333": { CLAVE: "C80333", NOMBRE: "Irina" }
+  "80333": { CLAVE: "80333", NOMBRE: "Irina" }
 };
 
 let usuarioActual = null;
