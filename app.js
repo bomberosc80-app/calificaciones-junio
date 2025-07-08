@@ -58,7 +58,23 @@ const usuarios = {
   "80334": { CLAVE: "THAIS11", NOMBRE: "Milagros" },
   "80335": { CLAVE: "xiorenaz", NOMBRE: "Ivana" },
   "80336": { CLAVE: "C80336", NOMBRE: "Walter" },
-  "80338": { CLAVE: "MELLIS02", NOMBRE: "Ricardi Carlos" }
+  "80338": { CLAVE: "MELLIS02", NOMBRE: "Ricardi Carlos" },
+  "80220": { CLAVE: "C80220", NOMBRE: "Marcos" },
+  "80207": { CLAVE: "C80207", NOMBRE: "Omar" },
+  "80182": { CLAVE: "C80182", NOMBRE: "Jorge" },
+  "80221": { CLAVE: "C80221", NOMBRE: "Marisa" },
+  "80236": { CLAVE: "C80236", NOMBRE: "Damian" },
+  "80219": { CLAVE: "C80219", NOMBRE: "Nicolas" },
+  "80238": { CLAVE: "C80238", NOMBRE: "David" },
+  "80241": { CLAVE: "C80241", NOMBRE: "Analia" },
+  "80269": { CLAVE: "C80269", NOMBRE: "Maria" },
+  "80292": { CLAVE: "C80292", NOMBRE: "Silvina" },
+  "80302": { CLAVE: "C80302", NOMBRE: "Nicolas" },
+  "80310": { CLAVE: "C80310", NOMBRE: "Juan Cruz" },
+  "80313": { CLAVE: "C80313", NOMBRE: "Dana" },
+  "80315": { CLAVE: "C80315", NOMBRE: "Macarena" },
+  "80320": { CLAVE: "C80320", NOMBRE: "Elizabeth" },
+  "80333": { CLAVE: "C80333", NOMBRE: "Irina" }
 };
 
 let usuarioActual = null;
