@@ -19,13 +19,17 @@ body {
 
 /* Contenedor principal */
 .container {
-  width: 100%;
-  max-width: 500px;
-  background-color: #1e1e1e;
-  padding: 2rem;
+  background-color: #1a1a1a;
+  border: 2px solid #ff4b4b;
   border-radius: 20px;
-  box-shadow: 0 0 20px rgba(255, 75, 75, 0.2);
+  padding: 30px;
+  box-shadow: 0 0 20px rgba(255, 75, 75, 0.3); /* efecto neón suave */
+  max-width: 400px;
+  margin: 100px auto;
   text-align: center;
+  animation: aparecer 0.8s ease-out;
+}
+
    flex: 1;
 }
 
@@ -55,18 +59,22 @@ h2 {
 
 /* Inputs y selectores */
 input[type="text"],
-input[type="password"],
-input[type="file"],
-select {
-  width: 100%;
-  padding: 0.7rem;
-  margin: 0.5rem 0;
+input[type="password"] {
+  border: 2px solid #ff4b4b; /* rojo */
+  background-color: #1e1e1e;
+  color: #fff;
+  padding: 10px;
   border-radius: 10px;
-  border: none;
-  background-color: #2a2a2a;
-  color: #ff4b4b;
-  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border-color: #ff4b4b; /* rojo en foco */
+  box-shadow: 0 0 10px #ff4b4b; /* efecto "neón" */
+}
+
 
 /* Botones */
 button {
