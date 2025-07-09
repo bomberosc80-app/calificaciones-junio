@@ -283,5 +283,20 @@ button:hover {
   color: #f55;
   z-index: 5;
 }
+.footer {
+  background-color: #1c1c1c;
+  color: #ff4b4b;
+  text-align: center;
+  padding: 10px 20px;
+  font-size: 0.85rem;
+  margin-top: 30px;
+  border-top: 1px solid #333;
+  border-radius: 0 0 12px 12px;
+  opacity: 0.8;
+}
+
+.footer.oculto {
+  display: none;
+}
 
 }
