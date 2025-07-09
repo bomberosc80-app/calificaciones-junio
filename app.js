@@ -136,7 +136,7 @@ async function cargarDatos() {
 
 function renderCalificaciones(mesSeleccionado) {
   const calif = datos[usuarioActual]?.calificaciones || {};
-  const categorias = ["Ded.Interna", "Roperia", "Asist.Diaria", "O.Interno", "Instruccion", "AAccidental", "Guardia", "P.Neg", "P.Esp", "TOTAL"];
+  const categorias = ["Ded.Interna", "Roperia", "Asist.Diaria", "O.Interno", "Instruccion", "Asist. Oblig", "AAccidental", "Guardia", "P.Neg", "P.Esp", "TOTAL"];
   const ordenMeses = ["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
   let totales = {};
   for (let c of categorias) totales[c] = 0;
