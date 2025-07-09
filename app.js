@@ -192,7 +192,6 @@ function renderCalificaciones(mesSeleccionado) {
 
   mostrarPorcentajeHT(usuarioActual);
   document.getElementById("footer-app").classList.remove("oculto");
-  document.getElementById("footer-app").classList.add("oculto");
 
 }
 
