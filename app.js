@@ -195,8 +195,6 @@ function renderCalificaciones(mesSeleccionado) {
   tabla.classList.add("fade-refresh");
 
   mostrarPorcentajeHT(usuarioActual);
-  document.getElementById("footer-app").classList.remove("oculto");
-
   actualizarVisibilidadFooter();
 
 }
