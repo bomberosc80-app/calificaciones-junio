@@ -23,14 +23,11 @@ body {
   border: 2px solid #ff4b4b;
   border-radius: 20px;
   padding: 30px;
-  box-shadow: 0 0 20px rgba(255, 75, 75, 0.3); /* efecto neón suave */
+  box-shadow: 0 0 20px rgba(255, 75, 75, 0.3);
   max-width: 400px;
   margin: 100px auto;
   text-align: center;
   animation: aparecer 0.8s ease-out;
-}
-
-   flex: 1;
 }
 
 /* Logo */
@@ -39,7 +36,7 @@ body {
 }
 
 .logo-img {
-   width: 100px;
+  width: 100px;
   height: auto;
   margin-bottom: 0.5rem;
 }
@@ -60,7 +57,7 @@ h2 {
 /* Inputs y selectores */
 input[type="text"],
 input[type="password"] {
-  border: 2px solid #ff4b4b; /* rojo */
+  border: 2px solid #ff4b4b;
   background-color: #1e1e1e;
   color: #fff;
   padding: 10px;
@@ -71,10 +68,9 @@ input[type="password"] {
 
 input[type="text"]:focus,
 input[type="password"]:focus {
-  border-color: #ff4b4b; /* rojo en foco */
-  box-shadow: 0 0 10px #ff4b4b; /* efecto "neón" */
+  border-color: #ff4b4b;
+  box-shadow: 0 0 10px #ff4b4b;
 }
-
 
 /* Botones */
 button {
@@ -181,26 +177,21 @@ button:hover {
   font-style: italic;
   font-size: 0.95rem;
   color: #f55;
-  
   padding: 10px;
-  
   box-shadow: 0 0 10px #f004;
   z-index: 2;
   position: relative;
-  
-  #porcentajeAsistencias h3 {
+  border: 2px solid #ff4b4b;
+  border-radius: 10px;
+  background-color: #1a1a1a;
+  box-shadow: 0 0 10px rgba(255, 75, 75, 0.4);
+}
+
+#porcentajeAsistencias h3 {
   font-size: 1.2rem;
   color: #ff4b4b;
   text-shadow: 0 0 5px #ff4b4b;
   margin-bottom: 10px;
-
-    #porcentajeAsistencias {
-  border: 2px solid #ff4b4b;
-  border-radius: 10px;
-  padding: 15px;
-  background-color: #1a1a1a;
-  box-shadow: 0 0 10px rgba(255, 75, 75, 0.4);
-
 }
 
 /* Firma digital */
@@ -210,17 +201,16 @@ button:hover {
   font-style: italic;
   font-size: 0.95rem;
   color: #f55;
-  background-color: #1a1a1a; /* opcional: destaca el bloque de firma */
+  background-color: #1a1a1a;
   padding: 10px;
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(255, 75, 75, 0.1);
 }
 
-/* Imagen de la firma */
 .imagen-firma {
   margin-top: 10px;
   max-width: 220px;
-  mix-blend-mode: lighten; /* hace que el fondo negro desaparezca sobre el fondo oscuro */
+  mix-blend-mode: lighten;
   user-select: none;
   pointer-events: none;
   -webkit-user-drag: none;
@@ -248,6 +238,18 @@ button:hover {
   min-width: 200px;
 }
 
+/* Footer */
+.footer {
+  margin-top: 2rem;
+  font-size: 0.85rem;
+  color: #ff4b4b;
+  opacity: 0.6;
+  text-align: center;
+}
+
+.footer.oculto {
+  display: none !important;
+}
 
 /* Animaciones */
 .fade-in {
@@ -265,15 +267,6 @@ button:hover {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* Footer */
-.footer {
-  margin-top: 2rem;
-  font-size: 0.85rem;
-  color: #ff4b4b;
-  opacity: 0.6;
-  text-align: center;
 }
 
 /* Responsive */
@@ -294,34 +287,30 @@ button:hover {
   select {
     font-size: 1rem;
   }
+
   .firma-digital {
-  position: sticky;
-  bottom: 0;
-  background-color: #1a1a1a;
-  padding: 12px;
-  border-radius: 12px 12px 0 0;
-  box-shadow: 0 -2px 10px rgba(255, 75, 75, 0.2);
-  text-align: center;
-  font-style: italic;
-  font-size: 0.95rem;
-  color: #f55;
-  z-index: 5;
-}
-.footer {
-  width: 100%;
-  background-color: #1c1c1c;
-  color: #ff4b4b;
-  text-align: center;
-  padding: 10px 20px;
-  font-size: 0.85rem;
-  border-top: 1px solid #333;
-  margin-top: 40px;
-  opacity: 0.8;
-}
+    position: sticky;
+    bottom: 0;
+    background-color: #1a1a1a;
+    padding: 12px;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -2px 10px rgba(255, 75, 75, 0.2);
+    text-align: center;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: #f55;
+    z-index: 5;
+  }
 
-.footer.oculto {
-  display: none;
-}
-
-
+  .footer {
+    width: 100%;
+    background-color: #1c1c1c;
+    color: #ff4b4b;
+    text-align: center;
+    padding: 10px 20px;
+    font-size: 0.85rem;
+    border-top: 1px solid #333;
+    margin-top: 40px;
+    opacity: 0.8;
+  }
 }
