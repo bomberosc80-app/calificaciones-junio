@@ -181,12 +181,26 @@ button:hover {
   font-style: italic;
   font-size: 0.95rem;
   color: #f55;
-  background-color: #111;
+  
   padding: 10px;
-  border-radius: 10px;
+  
   box-shadow: 0 0 10px #f004;
   z-index: 2;
   position: relative;
+  
+  #porcentajeAsistencias h3 {
+  font-size: 1.2rem;
+  color: #ff4b4b;
+  text-shadow: 0 0 5px #ff4b4b;
+  margin-bottom: 10px;
+
+    #porcentajeAsistencias {
+  border: 2px solid #ff4b4b;
+  border-radius: 10px;
+  padding: 15px;
+  background-color: #1a1a1a;
+  box-shadow: 0 0 10px rgba(255, 75, 75, 0.4);
+
 }
 
 /* Firma digital */
