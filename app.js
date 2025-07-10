@@ -216,21 +216,31 @@ function mostrarPorcentajeHT(usuarioId) {
   fetch('https://raw.githubusercontent.com/bomberosc80-app/calificaciones-junio/main/porcentajeht.csv')
     .then(res => res.text())
     .then(data => {
-      const lineas = data.trim().split("\n").slice(1); // Omitir encabezado
-      let porcentaje = null;
+      const lineas = data.trim().split("\n");
+      const encabezado = lineas[0].split(",");
+      const datos = lineas.slice(1);
+      let resultado = null;
 
-      for (let linea of lineas) {
-        const [id, valor] = linea.split(",");
+      for (let linea of datos) {
+        const valores = linea.split(",");
+        const id = valores[0];
         if (id === usuarioId) {
-          porcentaje = parseFloat(valor);
+          const computables = valores[1];
+          const concurridas = valores[2];
+          const porcentaje = parseFloat(valores[3]);
+          resultado = { computables, concurridas, porcentaje };
           break;
         }
       }
 
       const div = document.getElementById("porcentajeAsistencias");
 
-      if (porcentaje !== null) {
-        div.textContent = `Porcentaje de Asistencias a intervenciones: ${porcentaje.toFixed(1)}%`;
+      if (resultado) {
+        div.innerHTML = `
+          <strong>Total de intervenciones computables:</strong> ${resultado.computables}<br>
+          <strong>Total de intervenciones concurridas:</strong> ${resultado.concurridas}<br>
+          <strong>Porcentaje anual de intervenciones:</strong> ${resultado.porcentaje.toFixed(1)}%
+        `;
         div.classList.remove("hidden");
       } else {
         div.textContent = "";
@@ -241,6 +251,7 @@ function mostrarPorcentajeHT(usuarioId) {
       console.error("Error al cargar porcentajeht.csv:", err);
     });
 }
+
 
 // Protección para imágenes: impedir arrastre y selección
 document.addEventListener("DOMContentLoaded", () => {
