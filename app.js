@@ -93,6 +93,8 @@ async function iniciarSesion() {
     if (usuario === "admin") document.getElementById("panelAdmin").classList.remove("hidden");
     await cargarDatos();
     cambiarMes();
+    actualizarVisibilidadFooter();
+
   } else {
     alert("Usuario o clave incorrectos.");
   }
@@ -106,6 +108,8 @@ function cerrarSesion() {
   document.getElementById("usuario").value = "";
   document.getElementById("clave").value = "";
   document.getElementById("tablaCalificaciones").innerHTML = "";
+  actualizarVisibilidadFooter();
+
 }
 
 function cambiarMes() {
@@ -193,6 +197,8 @@ function renderCalificaciones(mesSeleccionado) {
   mostrarPorcentajeHT(usuarioActual);
   document.getElementById("footer-app").classList.remove("oculto");
 
+  actualizarVisibilidadFooter();
+
 }
 
 function previsualizarCSV() {
@@ -251,6 +257,14 @@ function mostrarPorcentajeHT(usuarioId) {
     .catch(err => {
       console.error("Error al cargar porcentajeht.csv:", err);
     });
+}
+
+function actualizarVisibilidadFooter() {
+  if (usuarioActual) {
+    document.getElementById("footer-app").classList.remove("oculto");
+  } else {
+    document.getElementById("footer-app").classList.add("oculto");
+  }
 }
 
 
