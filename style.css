@@ -188,11 +188,15 @@ button:hover {
 }
 
 #porcentajeAsistencias h3 {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
+  font-weight: 500;
   color: #ff4b4b;
-  text-shadow: 0 0 5px #ff4b4b;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #ff4b4b44;
+  padding-bottom: 4px;
+  letter-spacing: 0.5px;
 }
+
 
 /* Firma digital */
 .firma-digital {
